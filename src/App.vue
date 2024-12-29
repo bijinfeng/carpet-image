@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import Canvas from '@/components/Canvas/index.vue'
 
+import Nav from '@/components/Nav.vue'
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable'
 import { TooltipProvider } from '@/components/ui/tooltip'
-import Nav from '@/components/Nav.vue'
-import Canvas from '@/components/Canvas/index.vue'
 import { cn } from '@/lib/utils'
+import { ref } from 'vue'
 
 interface LayoutProps {
   defaultLayout?: number[]
@@ -32,10 +32,12 @@ function onExpand() {
 <template>
   <TooltipProvider :delay-duration="0">
     <ResizablePanelGroup id="resize-panel-group-1" direction="horizontal" class="!h-screen items-stretch">
-      <ResizablePanel id="resize-panel-1" :default-size="defaultLayout[0]" :collapsed-size="navCollapsedSize"
+      <ResizablePanel
+        id="resize-panel-1" :default-size="defaultLayout[0]" :collapsed-size="navCollapsedSize"
         collapsible :min-size="15" :max-size="20"
         :class="cn(isCollapsed && 'min-w-48 transition-all duration-300 ease-in-out')" @expand="onExpand"
-        @collapse="onCollapse">
+        @collapse="onCollapse"
+      >
         <Nav />
       </ResizablePanel>
       <ResizableHandle id="resize-handle-1" with-handle />
