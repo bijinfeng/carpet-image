@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import type { Size } from '@/types'
+import { useElementSize } from '@vueuse/core'
 import {
   computed,
-  nextTick,
   onMounted,
   reactive,
   ref,
   type StyleValue,
   useTemplateRef,
+  type VNode,
   watch,
 } from 'vue'
 
@@ -19,12 +21,13 @@ export interface CanvasState {
 export interface CanvasProps {
   width: number
   height: number
+  render: (props: Size) => VNode
 }
 
 const props = defineProps<CanvasProps>()
 
 const containerRef = useTemplateRef('containerRef')
-const canvasRef = useTemplateRef('canvasRef')
+const containerSize = useElementSize(containerRef)
 
 const canvasSize = reactive({ width: props.width, height: props.height })
 const state = reactive<CanvasState>({
@@ -45,13 +48,16 @@ const lastMousePos = reactive({ x: 0, y: 0 })
 
 function updateCanvasSize() {
   if (containerRef.value) {
-    const { width: containerWidth, height: containerHeight }
-      = containerRef.value.getBoundingClientRect()
+    const containerWidth = containerSize.width.value
+    const containerHeight = containerSize.height.value
+    const containerScale = 3 / 4
+
     const scale = Math.min(
-      containerWidth / props.width,
-      containerHeight / props.height,
+      containerWidth * containerScale / props.width,
+      containerHeight * containerScale / props.height,
       1,
     )
+
     const scaledWidth = props.width * scale
     const scaledHeight = props.height * scale
 
@@ -62,32 +68,6 @@ function updateCanvasSize() {
     state.offsetX = (containerWidth - scaledWidth) / 2
     state.offsetY = (containerHeight - scaledHeight) / 2
   }
-}
-
-function drawCanvas() {
-  const canvas = canvasRef.value
-  if (!canvas)
-    return
-
-  const ctx = canvas.getContext('2d')
-  if (!ctx)
-    return
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-  // Draw canvas content
-  ctx.fillStyle = '#ffffff'
-  ctx.fillRect(0, 0, props.width, props.height)
-  ctx.strokeStyle = '#000000'
-  ctx.strokeRect(0, 0, props.width, props.height)
-
-  // Example: Draw some shapes
-  ctx.fillStyle = 'red'
-  ctx.fillRect(50, 50, 100, 100)
-  ctx.fillStyle = 'blue'
-  ctx.beginPath()
-  ctx.arc(300, 200, 50, 0, Math.PI * 2)
-  ctx.fill()
 }
 
 function handleWheel(event: WheelEvent) {
@@ -144,21 +124,12 @@ function handleMouseUp() {
 onMounted(() => {
   updateCanvasSize()
   window.addEventListener('resize', updateCanvasSize)
-  drawCanvas()
 })
-
-watch(
-  () => [canvasSize.width, canvasSize.height],
-  () => {
-    nextTick(drawCanvas)
-  },
-)
 
 watch(
   () => [props.width, props.height],
   () => {
     updateCanvasSize()
-    nextTick(drawCanvas)
   },
 )
 </script>
@@ -166,7 +137,7 @@ watch(
 <template>
   <div
     ref="containerRef"
-    class="w-full h-full overflow-hidden"
+    class="flex flex-1 flex-col bg-muted/40 overflow-hidden"
     @wheel="handleWheel"
     @mousedown="handleMouseDown"
     @mousemove="handleMouseMove"
@@ -174,11 +145,7 @@ watch(
     @mouseleave="handleMouseUp"
   >
     <div class="cursor-pointer" :style="contentStyle">
-      <canvas
-        ref="canvasRef"
-        :width="canvasSize.width"
-        :height="canvasSize.height"
-      />
+      <component :is="props.render({ width: props.width, height: props.height })" />
     </div>
   </div>
 </template>
