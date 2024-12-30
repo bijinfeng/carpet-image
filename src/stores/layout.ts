@@ -12,5 +12,5 @@ export const useLayoutStore = defineStore('layout', () => {
 
   const switchCarpet = (id: number) => activeCarpetId.value = id
 
-  return { carpetList, activeCarpet, switchCarpet }
+  return { carpetList, activeCarpet, activeCarpetId, switchCarpet }
 })

@@ -8,6 +8,7 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { useLayoutStore } from '@/stores/layout'
 
 interface LayoutProps {
   defaultLayout?: number[]
@@ -16,6 +17,8 @@ interface LayoutProps {
 withDefaults(defineProps<LayoutProps>(), {
   defaultLayout: () => [20, 80],
 })
+
+const layoutStore = useLayoutStore()
 </script>
 
 <template>
@@ -38,7 +41,7 @@ withDefaults(defineProps<LayoutProps>(), {
         id="resize-panel-2"
         :default-size="defaultLayout[1]"
       >
-        <Canvas />
+        <Canvas :key="layoutStore.activeCarpetId" />
       </ResizablePanel>
     </ResizablePanelGroup>
   </TooltipProvider>

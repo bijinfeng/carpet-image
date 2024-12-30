@@ -13,7 +13,6 @@ import {
 } from 'vue'
 
 export interface CanvasState {
-  scale: number
   offsetX: number
   offsetY: number
 }
@@ -25,19 +24,18 @@ export interface CanvasProps {
 }
 
 const props = defineProps<CanvasProps>()
-
+const scaleState = defineModel('scale', { type: Number, default: 1 })
 const containerRef = useTemplateRef('containerRef')
 const containerSize = useElementSize(containerRef)
 
 const canvasSize = reactive({ width: props.width, height: props.height })
 const state = reactive<CanvasState>({
-  scale: 1,
   offsetX: 0,
   offsetY: 0,
 })
 
 const contentStyle = computed<StyleValue>(() => ({
-  transform: `translate(${state.offsetX}px, ${state.offsetY}px) scale(${state.scale})`,
+  transform: `translate(${state.offsetX}px, ${state.offsetY}px) scale(${scaleState.value})`,
   transformOrigin: '0 0',
   width: canvasSize.width,
   height: canvasSize.height,
@@ -64,7 +62,7 @@ function updateCanvasSize() {
     canvasSize.width = scaledWidth
     canvasSize.height = scaledHeight
 
-    state.scale = scale
+    scaleState.value = scale
     state.offsetX = (containerWidth - scaledWidth) / 2
     state.offsetY = (containerHeight - scaledHeight) / 2
   }
@@ -85,14 +83,14 @@ function handleWheel(event: WheelEvent) {
   const deltaFactor = Math.abs(deltaY) / 100 // Normalize deltaY
   const adjustedScaleFactor = scaleFactor * deltaFactor
   const newScale = deltaY > 0
-    ? state.scale * (1 - adjustedScaleFactor)
-    : state.scale * (1 + adjustedScaleFactor)
+    ? scaleState.value * (1 - adjustedScaleFactor)
+    : scaleState.value * (1 + adjustedScaleFactor)
 
-  const scaleChange = newScale - state.scale
-  const newOffsetX = state.offsetX - (x - state.offsetX) * (scaleChange / state.scale)
-  const newOffsetY = state.offsetY - (y - state.offsetY) * (scaleChange / state.scale)
+  const scaleChange = newScale - scaleState.value
+  const newOffsetX = state.offsetX - (x - state.offsetX) * (scaleChange / scaleState.value)
+  const newOffsetY = state.offsetY - (y - state.offsetY) * (scaleChange / scaleState.value)
 
-  state.scale = Math.max(0.01, Math.min(10, newScale))
+  scaleState.value = Math.max(0.01, Math.min(10, newScale))
   state.offsetX = newOffsetX
   state.offsetY = newOffsetY
 }
