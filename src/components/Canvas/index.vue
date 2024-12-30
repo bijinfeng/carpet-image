@@ -3,9 +3,13 @@ import { Button } from '@/components/ui/button'
 
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { useLayoutStore } from '@/stores/layout'
 import { Download } from 'lucide-vue-next'
-
+import { storeToRefs } from 'pinia'
 import Content from './Content.vue'
+
+const layoutStore = useLayoutStore()
+const { activeCarpet } = storeToRefs(layoutStore)
 </script>
 
 <template>
@@ -23,7 +27,7 @@ import Content from './Content.vue'
     </div>
     <Separator />
     <div class="flex flex-1 flex-col bg-muted/40">
-      <Content :width="800" :height="600" />
+      <Content v-if="activeCarpet" :width="activeCarpet.defaultSize.width" :height="activeCarpet.defaultSize.height" />
     </div>
   </div>
 </template>
