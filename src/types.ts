@@ -10,5 +10,6 @@ export interface CarpetData {
   name: string
   assetUrl: string
   defaultSize: Size
+  step: number
   renderCanvas: (props: Size) => VNode
 }

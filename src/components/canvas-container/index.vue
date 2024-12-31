@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Size } from '@/types'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label'
@@ -12,9 +13,9 @@ import {
 import { useLayoutStore } from '@/stores/layout'
 import { Download, Minus, Plus } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
-import { computed, ref } from 'vue'
 
-import Content from './Content.vue'
+import { computed, ref, useTemplateRef } from 'vue'
+import Container from './container.vue'
 
 const MIN_SCALE = 0.1
 const MAX_SCALE = 2
@@ -33,6 +34,8 @@ const layoutStore = useLayoutStore()
 const { activeCarpet } = storeToRefs(layoutStore)
 
 const scale = ref(1)
+const size = ref<Size>(activeCarpet.value!.defaultSize)
+const canvasRef = useTemplateRef<{ exportToImage: () => void }>('canvasRef')
 
 const scaleText = computed(() => {
   return `${Math.round(scale.value * 100)}%`
@@ -49,13 +52,17 @@ function plusScale() {
 function minusScale() {
   scale.value = Math.max(MIN_SCALE, scale.value - SCALE_STEP)
 }
+
+function handleDownload() {
+  canvasRef.value?.exportToImage()
+}
 </script>
 
 <template>
   <div class="flex h-full flex-col">
     <div class="relative flex items-center px-4 py-2 h-[52px]">
       <div class="flex-1 flex justify-center items-center">
-        <NumberField class="w-32">
+        <NumberField v-model:model-value="size.width" class="w-32" :step="activeCarpet?.step">
           <NumberFieldContent>
             <NumberFieldDecrement />
             <NumberFieldInput />
@@ -63,7 +70,7 @@ function minusScale() {
           </NumberFieldContent>
         </NumberField>
         <span class="w-10 text-center">x</span>
-        <NumberField class="w-32">
+        <NumberField v-model:model-value="size.height" class="w-32" :step="activeCarpet?.step">
           <NumberFieldContent>
             <NumberFieldDecrement />
             <NumberFieldInput />
@@ -105,7 +112,7 @@ function minusScale() {
         </Tooltip>
         <Tooltip>
           <TooltipTrigger as-child>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" @click="handleDownload">
               <Download class="size-4" />
               <span class="sr-only">下载</span>
             </Button>
@@ -115,12 +122,16 @@ function minusScale() {
       </div>
     </div>
     <Separator />
-    <Content
+    <Container
       v-if="activeCarpet"
       v-model:scale="scale"
-      :width="activeCarpet.defaultSize.width"
-      :height="activeCarpet.defaultSize.height"
-      :render="activeCarpet.renderCanvas"
-    />
+      :width="size.width"
+      :height="size.height"
+    >
+      <component
+        :is="activeCarpet.renderCanvas({ width: size.width, height: size.height })"
+        ref="canvasRef"
+      />
+    </Container>
   </div>
 </template>

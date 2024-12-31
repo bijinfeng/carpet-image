@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Size } from '@/types'
 import { useElementSize } from '@vueuse/core'
 import {
   computed,
@@ -8,7 +7,6 @@ import {
   ref,
   type StyleValue,
   useTemplateRef,
-  type VNode,
   watch,
 } from 'vue'
 
@@ -20,7 +18,6 @@ export interface CanvasState {
 export interface CanvasProps {
   width: number
   height: number
-  render: (props: Size) => VNode
 }
 
 const props = defineProps<CanvasProps>()
@@ -51,8 +48,8 @@ function updateCanvasSize() {
     const containerScale = 3 / 4
 
     const scale = Math.min(
-      containerWidth * containerScale / props.width,
-      containerHeight * containerScale / props.height,
+      (containerWidth * containerScale) / props.width,
+      (containerHeight * containerScale) / props.height,
       1,
     )
 
@@ -82,13 +79,16 @@ function handleWheel(event: WheelEvent) {
   const scaleFactor = 0.2
   const deltaFactor = Math.abs(deltaY) / 100 // Normalize deltaY
   const adjustedScaleFactor = scaleFactor * deltaFactor
-  const newScale = deltaY > 0
-    ? scaleState.value * (1 - adjustedScaleFactor)
-    : scaleState.value * (1 + adjustedScaleFactor)
+  const newScale
+    = deltaY > 0
+      ? scaleState.value * (1 - adjustedScaleFactor)
+      : scaleState.value * (1 + adjustedScaleFactor)
 
   const scaleChange = newScale - scaleState.value
-  const newOffsetX = state.offsetX - (x - state.offsetX) * (scaleChange / scaleState.value)
-  const newOffsetY = state.offsetY - (y - state.offsetY) * (scaleChange / scaleState.value)
+  const newOffsetX
+    = state.offsetX - (x - state.offsetX) * (scaleChange / scaleState.value)
+  const newOffsetY
+    = state.offsetY - (y - state.offsetY) * (scaleChange / scaleState.value)
 
   scaleState.value = Math.max(0.01, Math.min(10, newScale))
   state.offsetX = newOffsetX
@@ -143,7 +143,7 @@ watch(
     @mouseleave="handleMouseUp"
   >
     <div class="cursor-pointer" :style="contentStyle">
-      <component :is="props.render({ width: props.width, height: props.height })" />
+      <slot />
     </div>
   </div>
 </template>

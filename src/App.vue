@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import Canvas from '@/components/Canvas/index.vue'
+import CanvasContainer from '@/components/canvas-container/index.vue'
 
-import Nav from '@/components/Nav.vue'
+import NavList from '@/components/nav-list.vue'
 import {
   ResizableHandle,
   ResizablePanel,
@@ -34,14 +34,14 @@ const layoutStore = useLayoutStore()
         :min-size="15"
         :max-size="20"
       >
-        <Nav />
+        <NavList />
       </ResizablePanel>
       <ResizableHandle id="resize-handle-1" with-handle />
       <ResizablePanel
         id="resize-panel-2"
         :default-size="defaultLayout[1]"
       >
-        <Canvas :key="layoutStore.activeCarpetId" />
+        <CanvasContainer :key="layoutStore.activeCarpetId" />
       </ResizablePanel>
     </ResizablePanelGroup>
   </TooltipProvider>
