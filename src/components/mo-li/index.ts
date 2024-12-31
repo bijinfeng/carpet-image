@@ -7,7 +7,7 @@ export const moli: CarpetData = {
   id: 1,
   name: '墨离',
   assetUrl: moliUrl,
-  step: 76,
-  defaultSize: { width: 4712, height: 1216 },
+  step: 100,
+  defaultSize: { width: 6814, height: 1614 },
   renderCanvas: props => h(RenderCanvas, props),
 }

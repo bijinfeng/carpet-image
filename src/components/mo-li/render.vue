@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import type { Size } from '@/types'
 import type Konva from 'konva'
-import qualityOfLifeImage from '@/assets/zhongxia/QUALITY -OF-LIFE .png'
+import textImage from '@/assets/moli/moli-text.jpg'
 import { downloadURI } from '@/lib/utils'
 import { useImage } from '@vueuse/core'
 import { computed, useTemplateRef } from 'vue'
 
 const props = defineProps<Size>()
-const IMAGE_WIDTH = 1169
-const IMAGE_HEIGHT = 125
-const BLOCK_SIZE = 76
-const BLOCK_PADDING = 38
+const IMAGE_WIDTH = 1594
+const IMAGE_HEIGHT = 406
+const BLOCK_SIZE = 100
+const BLOCK_PADDING = 57
 
 const stageRef = useTemplateRef<InstanceType<typeof Konva.Stage>>('stage')
-const { state } = useImage({ src: qualityOfLifeImage })
+const { state } = useImage({ src: textImage })
 
 const configRect = computed<Konva.RectConfig>(() => {
   return {
