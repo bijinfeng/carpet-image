@@ -130,6 +130,7 @@ function handleDownload() {
     >
       <component
         :is="activeCarpet.renderCanvas({ width: size.width, height: size.height })"
+        :key="`${size.width}_${size.height}`"
         ref="canvasRef"
       />
     </Container>
