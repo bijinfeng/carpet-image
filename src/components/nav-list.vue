@@ -8,7 +8,7 @@ const layoutStore = useLayoutStore()
 
 <template>
   <ScrollArea class="p-2 h-full bg-muted">
-    <Card v-for="item in layoutStore.carpetList" :key="item.id" class="p-3 cursor-pointer" @click="() => layoutStore.switchCarpet(item.id)">
+    <Card v-for="item in layoutStore.carpetList" :key="item.id" class="p-3 cursor-pointer mb-2" @click="() => layoutStore.switchCarpet(item.id)">
       <div class="overflow-hidden">
         <img
           :src="item.assetUrl" :alt="item.name"

@@ -1,11 +1,12 @@
 import type { CarpetData } from '../types'
 import { moli } from '@/components/mo-li'
+import { zhongxia } from '@/components/zhongxia'
 
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
 export const useLayoutStore = defineStore('layout', () => {
-  const carpetList = ref<CarpetData[]>([moli])
+  const carpetList = ref<CarpetData[]>([moli, zhongxia])
   const activeCarpetId = ref<number>(carpetList.value[0].id)
 
   const activeCarpet = computed(() => carpetList.value.find(it => it.id === activeCarpetId.value))

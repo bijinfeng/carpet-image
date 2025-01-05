@@ -7,8 +7,8 @@ import { useImage } from '@vueuse/core'
 import { computed, useTemplateRef } from 'vue'
 
 const props = defineProps<Size>()
-const IMAGE_WIDTH = 1594
-const IMAGE_HEIGHT = 406
+const IMAGE_WIDTH = 1511
+const IMAGE_HEIGHT = 123
 const BLOCK_SIZE = 100
 const BLOCK_PADDING = 57
 

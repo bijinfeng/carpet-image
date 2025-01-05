@@ -65,7 +65,7 @@ function handleDownload() {
         <NumberField v-model:model-value="size.width" class="w-32" :step="activeCarpet?.step">
           <NumberFieldContent>
             <NumberFieldDecrement />
-            <NumberFieldInput />
+            <NumberFieldInput v-model="size.width" />
             <NumberFieldIncrement />
           </NumberFieldContent>
         </NumberField>
