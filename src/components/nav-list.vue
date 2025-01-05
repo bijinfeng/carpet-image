@@ -9,10 +9,10 @@ const layoutStore = useLayoutStore()
 <template>
   <ScrollArea class="p-2 h-full bg-muted">
     <Card v-for="item in layoutStore.carpetList" :key="item.id" class="p-3 cursor-pointer mb-2" @click="() => layoutStore.switchCarpet(item.id)">
-      <div class="overflow-hidden">
+      <div class="overflow-hidden aspect-[10/3]">
         <img
           :src="item.assetUrl" :alt="item.name"
-          class="h-20 w-full object-contain aspect-square"
+          class="h-full w-full object-contain aspect-square"
         >
       </div>
       <div class="mt-3 text-center text-sm">
