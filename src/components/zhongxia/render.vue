@@ -36,7 +36,7 @@ const configRect = computed<Konva.RectConfig>(() => {
     height: props.height - RECT_SIZE,
     stroke: 'black',
     strokeWidth: RECT_SIZE,
-    fill: 'white',
+    // fill: 'white',
   }
 })
 
@@ -117,10 +117,11 @@ defineExpose({ exportToImage })
 <template>
   <v-stage ref="stage" :config="{ width: props.width, height: props.height }">
     <v-layer>
-      <v-rect :config="configRect" />
       <v-image :config="configImage" />
       <v-image :config="configImageRtFlower" />
       <v-image :config="configImageLbFlower" />
+      <v-rect :config="configRect" />
+
       <v-image v-for="(item, idx) in configBlocks" :key="idx" :config="item" />
     </v-layer>
   </v-stage>
