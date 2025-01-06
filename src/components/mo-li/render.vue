@@ -10,7 +10,7 @@ const props = defineProps<Size>()
 const IMAGE_WIDTH = 1511
 const IMAGE_HEIGHT = 123
 const BLOCK_SIZE = 60
-const BLOCK_PADDING = 57
+const BLOCK_PADDING = 30
 
 const stageRef = useTemplateRef<InstanceType<typeof Konva.Stage>>('stage')
 const { state } = useImage({ src: textImage })
