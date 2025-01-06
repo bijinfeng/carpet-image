@@ -9,7 +9,7 @@ import { computed, useTemplateRef } from 'vue'
 const props = defineProps<Size>()
 const IMAGE_WIDTH = 1511
 const IMAGE_HEIGHT = 123
-const BLOCK_SIZE = 100
+const BLOCK_SIZE = 60
 const BLOCK_PADDING = 57
 
 const stageRef = useTemplateRef<InstanceType<typeof Konva.Stage>>('stage')
