@@ -3,7 +3,6 @@ import type { Size } from '@/types'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label'
-import { NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput } from '@/components/ui/number-field'
 import { Separator } from '@/components/ui/separator'
 import {
   Tooltip,
@@ -15,6 +14,7 @@ import { Download, Minus, Plus } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 
 import { computed, ref, useTemplateRef } from 'vue'
+import SizeField from '../size-field.vue'
 import Container from './container.vue'
 
 const MIN_SCALE = 0.1
@@ -62,21 +62,9 @@ function handleDownload() {
   <div class="flex h-full flex-col">
     <div class="relative flex items-center px-4 py-2 h-[52px]">
       <div class="flex-1 flex justify-center items-center">
-        <NumberField v-model:model-value="size.width" class="w-32" :step="activeCarpet?.step">
-          <NumberFieldContent>
-            <NumberFieldDecrement />
-            <NumberFieldInput v-model="size.width" />
-            <NumberFieldIncrement />
-          </NumberFieldContent>
-        </NumberField>
+        <SizeField v-model:model-value="size.width" class="w-32" :step="activeCarpet?.step" />
         <span class="w-10 text-center">x</span>
-        <NumberField v-model:model-value="size.height" class="w-32" :step="activeCarpet?.step">
-          <NumberFieldContent>
-            <NumberFieldDecrement />
-            <NumberFieldInput />
-            <NumberFieldIncrement />
-          </NumberFieldContent>
-        </NumberField>
+        <SizeField v-model:model-value="size.height" class="w-32" :step="activeCarpet?.step" />
       </div>
       <div class="absolute flex items-center right-4 gap-2">
         <Tooltip>
