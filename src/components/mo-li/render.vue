@@ -29,6 +29,14 @@ const configRect = computed<Konva.RectConfig>(() => {
   }
 })
 
+const backgroundConfig = computed<Konva.RectConfig>(() => ({
+  x: -SPACE_WIDTH,
+  y: 0,
+  width: props.width + SPACE_WIDTH,
+  height: props.height,
+  fill: 'white',
+}))
+
 const configImage = computed<Konva.ImageConfig>(() => ({
   x: (props.width - IMAGE_WIDTH) / 2,
   y: (props.height - IMAGE_HEIGHT) / 2,
@@ -95,9 +103,8 @@ defineExpose({ exportToImage })
 <template>
   <v-stage ref="stage" :config="{ width: props.width + SPACE_WIDTH, height: props.height, offsetX: -SPACE_WIDTH }">
     <v-layer>
-      <v-text
-        :config="textConfig"
-      />
+      <v-rect :config="backgroundConfig" />
+      <v-text :config="textConfig" />
       <v-rect :config="configRect" />
       <v-rect v-for="(item, idx) in configBlocks" :key="idx" :config="item" />
       <v-image :config="configImage" />

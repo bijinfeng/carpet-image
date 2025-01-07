@@ -61,9 +61,9 @@ const textConfig = computed<Konva.TextConfig>(() => ({
 }))
 
 const backgroundConfig = computed<Konva.RectConfig>(() => ({
-  x: 0,
+  x: -SPACE_WIDTH,
   y: 0,
-  width: props.width,
+  width: props.width + SPACE_WIDTH,
   height: props.height,
   fill: 'white',
 }))
@@ -138,9 +138,7 @@ defineExpose({ exportToImage })
   <v-stage ref="stage" :config="{ width: props.width + SPACE_WIDTH, height: props.height, offsetX: -SPACE_WIDTH }">
     <v-layer>
       <v-rect :config="backgroundConfig" />
-      <v-text
-        :config="textConfig"
-      />
+      <v-text :config="textConfig" />
       <v-image :config="configImage" />
       <v-image :config="configImageRtFlower" />
       <v-image :config="configImageLbFlower" />
