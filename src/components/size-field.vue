@@ -6,10 +6,10 @@ const props = defineProps<{ step?: number }>()
 
 const state = defineModel<number>({ default: 0 })
 
-const value = computed(() => state.value / 30)
+const value = computed(() => state.value / 28.34645669)
 
 function handleChange(num: number) {
-  state.value = num * 30
+  state.value = num * 28.34645669
 }
 </script>
 

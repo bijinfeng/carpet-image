@@ -48,6 +48,14 @@ const configImage = computed<Konva.ImageConfig>(() => ({
   image: state.value,
 }))
 
+const backgroundConfig = computed<Konva.RectConfig>(() => ({
+  x: 0,
+  y: 0,
+  width: props.width,
+  height: props.height,
+  fill: 'white',
+}))
+
 const configImageRtFlower = computed<Konva.ImageConfig>(() => ({
   x: props.width - IMAGE_RTFLOWER_WIDTH,
   y: 21,
@@ -117,6 +125,7 @@ defineExpose({ exportToImage })
 <template>
   <v-stage ref="stage" :config="{ width: props.width, height: props.height }">
     <v-layer>
+      <v-rect :config="backgroundConfig" />
       <v-image :config="configImage" />
       <v-image :config="configImageRtFlower" />
       <v-image :config="configImageLbFlower" />
