@@ -1,16 +1,18 @@
 <script setup lang="ts">
-import type { Size } from '@/types'
+import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import textImage from '@/assets/moli/moli-text.jpg'
 import { downloadURI } from '@/lib/utils'
 import { useImage } from '@vueuse/core'
 import { computed, useTemplateRef } from 'vue'
 
-const props = defineProps<Size>()
+const props = defineProps<RenderProps>()
 const IMAGE_WIDTH = 1511
 const IMAGE_HEIGHT = 123
 const BLOCK_SIZE = 60
-const BLOCK_PADDING = 28.34645669
+const BLOCK_PADDING = 30
+const SPACE_WIDTH = 100
+const TEXT_FONT_SIZE = 100
 
 const stageRef = useTemplateRef<InstanceType<typeof Konva.Stage>>('stage')
 const { state } = useImage({ src: textImage })
@@ -33,6 +35,16 @@ const configImage = computed<Konva.ImageConfig>(() => ({
   width: IMAGE_WIDTH,
   height: IMAGE_HEIGHT,
   image: state.value,
+}))
+
+const textConfig = computed<Konva.TextConfig>(() => ({
+  text: props.type,
+  x: -SPACE_WIDTH,
+  y: props.height,
+  fontSize: TEXT_FONT_SIZE,
+  fill: 'red',
+  rotation: -90,
+  lineHeight: SPACE_WIDTH / TEXT_FONT_SIZE,
 }))
 
 // 生成 blocks
@@ -81,8 +93,11 @@ defineExpose({ exportToImage })
 </script>
 
 <template>
-  <v-stage ref="stage" :config="{ width: props.width, height: props.height }">
+  <v-stage ref="stage" :config="{ width: props.width + SPACE_WIDTH, height: props.height, offsetX: -SPACE_WIDTH }">
     <v-layer>
+      <v-text
+        :config="textConfig"
+      />
       <v-rect :config="configRect" />
       <v-rect v-for="(item, idx) in configBlocks" :key="idx" :config="item" />
       <v-image :config="configImage" />

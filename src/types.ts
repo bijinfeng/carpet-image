@@ -5,11 +5,15 @@ export interface Size {
   height: number
 }
 
+export interface RenderProps extends Size {
+  type: string
+}
+
 export interface CarpetData {
   id: number
   name: string
   assetUrl: string
   defaultSize: Size
   step?: number
-  renderCanvas: (props: Size) => VNode
+  renderCanvas: (props: RenderProps) => VNode
 }

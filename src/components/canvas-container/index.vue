@@ -2,6 +2,7 @@
 import type { Size } from '@/types'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -34,6 +35,7 @@ const layoutStore = useLayoutStore()
 const { activeCarpet } = storeToRefs(layoutStore)
 
 const scale = ref(1)
+const typeNo = ref('')
 const size = ref<Size>(activeCarpet.value!.defaultSize)
 const canvasRef = useTemplateRef<{ exportToImage: () => void }>('canvasRef')
 
@@ -61,6 +63,7 @@ function handleDownload() {
 <template>
   <div class="flex h-full flex-col">
     <div class="relative flex items-center px-4 py-2 h-[52px]">
+      <Input v-model:model-value="typeNo" class="w-48 absolute" />
       <div class="flex-1 flex justify-center items-center">
         <SizeField v-model:model-value="size.width" class="w-32" :step="activeCarpet?.step" />
         <span class="w-10 text-center">x</span>
@@ -117,7 +120,7 @@ function handleDownload() {
       :height="size.height"
     >
       <component
-        :is="activeCarpet.renderCanvas({ width: size.width, height: size.height })"
+        :is="activeCarpet.renderCanvas({ width: size.width, height: size.height, type: typeNo })"
         :key="`${size.width}_${size.height}`"
         ref="canvasRef"
       />

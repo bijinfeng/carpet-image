@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Size } from '@/types'
+import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import blackWheatear from '@/assets/zhongxia/black-wheatear.svg'
 import lbFlower from '@/assets/zhongxia/lbhua.svg'
@@ -10,7 +10,7 @@ import { downloadURI } from '@/lib/utils'
 import { useImage } from '@vueuse/core'
 import { computed, useTemplateRef } from 'vue'
 
-const props = defineProps<Size>()
+const props = defineProps<RenderProps>()
 const IMAGE_WIDTH = 765
 const IMAGE_HEIGHT = 180
 const IMAGE_RTFLOWER_WIDTH = 531
@@ -20,6 +20,8 @@ const IMAGE_LBFLOWER_HEIGHT = 437
 const BLOCK_SIZE = 39
 const BLOCK_PADDING = 10
 const RECT_SIZE = 60
+const SPACE_WIDTH = 100
+const TEXT_FONT_SIZE = 50
 
 const stageRef = useTemplateRef<InstanceType<typeof Konva.Stage>>('stage')
 const { state } = useImage({ src: textImage })
@@ -46,6 +48,16 @@ const configImage = computed<Konva.ImageConfig>(() => ({
   width: IMAGE_WIDTH,
   height: IMAGE_HEIGHT,
   image: state.value,
+}))
+
+const textConfig = computed<Konva.TextConfig>(() => ({
+  text: props.type,
+  x: -SPACE_WIDTH,
+  y: props.height,
+  fontSize: TEXT_FONT_SIZE,
+  fill: 'red',
+  rotation: -90,
+  lineHeight: SPACE_WIDTH / TEXT_FONT_SIZE,
 }))
 
 const backgroundConfig = computed<Konva.RectConfig>(() => ({
@@ -123,9 +135,12 @@ defineExpose({ exportToImage })
 </script>
 
 <template>
-  <v-stage ref="stage" :config="{ width: props.width, height: props.height }">
+  <v-stage ref="stage" :config="{ width: props.width + SPACE_WIDTH, height: props.height, offsetX: -SPACE_WIDTH }">
     <v-layer>
       <v-rect :config="backgroundConfig" />
+      <v-text
+        :config="textConfig"
+      />
       <v-image :config="configImage" />
       <v-image :config="configImageRtFlower" />
       <v-image :config="configImageLbFlower" />
