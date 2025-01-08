@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Size } from '@/types'
+import type { RenderProps, Size } from '@/types'
 import { Button } from '@/components/ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
@@ -10,13 +10,16 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { CM_TO_PX } from '@/constants'
 import { useLayoutStore } from '@/stores/layout'
+import { round } from 'lodash-es'
 import { Download, Minus, Plus } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
 
+import { storeToRefs } from 'pinia'
 import { computed, ref, useTemplateRef } from 'vue'
 import SizeField from '../size-field.vue'
 import Container from './container.vue'
+import Render from './render.vue'
 
 const MIN_SCALE = 0.1
 const MAX_SCALE = 2
@@ -43,6 +46,20 @@ const scaleText = computed(() => {
   return `${Math.round(scale.value * 100)}%`
 })
 
+const renderText = computed(() => {
+  return [
+    typeNo.value,
+    activeCarpet.value!.name,
+    `${round(size.value.width / CM_TO_PX, 3)}-${round(size.value.height / CM_TO_PX, 3)}`,
+  ].join('')
+})
+
+const renderProps = computed<RenderProps>(() => ({
+  width: size.value.width,
+  height: size.value.height,
+  text: renderText.value,
+}))
+
 function setScale(num: number) {
   scale.value = num
 }
@@ -63,7 +80,7 @@ function handleDownload() {
 <template>
   <div class="flex h-full flex-col">
     <div class="relative flex items-center px-4 py-2 h-[52px]">
-      <Input v-model:model-value="typeNo" class="w-48 absolute" />
+      <Input v-model:model-value="typeNo" class="w-48 absolute" placeholder="备注" />
       <div class="flex-1 flex justify-center items-center">
         <SizeField v-model:model-value="size.width" class="w-32" :step="activeCarpet?.step" />
         <span class="w-10 text-center">x</span>
@@ -119,11 +136,9 @@ function handleDownload() {
       :width="size.width"
       :height="size.height"
     >
-      <component
-        :is="activeCarpet.renderCanvas({ width: size.width, height: size.height, type: typeNo })"
-        :key="`${size.width}_${size.height}`"
-        ref="canvasRef"
-      />
+      <Render ref="canvasRef" :key="`${size.width}_${size.height}`" v-bind="renderProps">
+        <component :is="activeCarpet.renderCanvas(renderProps)" />
+      </Render>
     </Container>
   </div>
 </template>

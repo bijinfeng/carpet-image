@@ -6,9 +6,8 @@ import lbFlower from '@/assets/zhongxia/lbhua.svg'
 import rtFlower from '@/assets/zhongxia/rthua.svg'
 import whiteWheatear from '@/assets/zhongxia/white-wheatear.svg'
 import textImage from '@/assets/zhongxia/zhongxia-text.svg'
-import { downloadURI } from '@/lib/utils'
 import { useImage } from '@vueuse/core'
-import { computed, useTemplateRef } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps<RenderProps>()
 const IMAGE_WIDTH = 765
@@ -20,10 +19,7 @@ const IMAGE_LBFLOWER_HEIGHT = 437
 const BLOCK_SIZE = 39
 const BLOCK_PADDING = 10
 const RECT_SIZE = 60
-const SPACE_WIDTH = 28.34645669
-const TEXT_FONT_SIZE = 24
 
-const stageRef = useTemplateRef<InstanceType<typeof Konva.Stage>>('stage')
 const { state } = useImage({ src: textImage })
 const { state: rtFlowerState } = useImage({ src: rtFlower })
 const { state: lbFlowerState } = useImage({ src: lbFlower })
@@ -38,7 +34,6 @@ const configRect = computed<Konva.RectConfig>(() => {
     height: props.height - RECT_SIZE,
     stroke: 'black',
     strokeWidth: RECT_SIZE,
-    // fill: 'white',
   }
 })
 
@@ -48,24 +43,6 @@ const configImage = computed<Konva.ImageConfig>(() => ({
   width: IMAGE_WIDTH,
   height: IMAGE_HEIGHT,
   image: state.value,
-}))
-
-const textConfig = computed<Konva.TextConfig>(() => ({
-  text: props.type,
-  x: -SPACE_WIDTH,
-  y: props.height,
-  fontSize: TEXT_FONT_SIZE,
-  fill: 'red',
-  rotation: -90,
-  lineHeight: SPACE_WIDTH / TEXT_FONT_SIZE,
-}))
-
-const backgroundConfig = computed<Konva.RectConfig>(() => ({
-  x: -SPACE_WIDTH,
-  y: 0,
-  width: props.width + SPACE_WIDTH,
-  height: props.height,
-  fill: 'white',
 }))
 
 const configImageRtFlower = computed<Konva.ImageConfig>(() => ({
@@ -125,26 +102,13 @@ const configBlocks = computed<Konva.ImageConfig[]>(() => {
 
   return blocks
 })
-
-function exportToImage() {
-  const dataURL = stageRef.value!.getStage().toDataURL({ pixelRatio: 1 })
-  downloadURI(dataURL, 'stage.png')
-}
-
-defineExpose({ exportToImage })
 </script>
 
 <template>
-  <v-stage ref="stage" :config="{ width: props.width + SPACE_WIDTH, height: props.height, offsetX: -SPACE_WIDTH }">
-    <v-layer>
-      <v-rect :config="backgroundConfig" />
-      <v-text :config="textConfig" />
-      <v-image :config="configImage" />
-      <v-image :config="configImageRtFlower" />
-      <v-image :config="configImageLbFlower" />
-      <v-rect :config="configRect" />
+  <v-image :config="configImage" />
+  <v-image :config="configImageRtFlower" />
+  <v-image :config="configImageLbFlower" />
+  <v-rect :config="configRect" />
 
-      <v-image v-for="(item, idx) in configBlocks" :key="idx" :config="item" />
-    </v-layer>
-  </v-stage>
+  <v-image v-for="(item, idx) in configBlocks" :key="idx" :config="item" />
 </template>

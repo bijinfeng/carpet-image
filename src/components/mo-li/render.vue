@@ -2,19 +2,15 @@
 import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import textImage from '@/assets/moli/moli-text.jpg'
-import { downloadURI } from '@/lib/utils'
 import { useImage } from '@vueuse/core'
-import { computed, useTemplateRef } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps<RenderProps>()
 const IMAGE_WIDTH = 1511
 const IMAGE_HEIGHT = 123
 const BLOCK_SIZE = 60
 const BLOCK_PADDING = 30
-const SPACE_WIDTH = 28.34645669
-const TEXT_FONT_SIZE = 24
 
-const stageRef = useTemplateRef<InstanceType<typeof Konva.Stage>>('stage')
 const { state } = useImage({ src: textImage })
 
 const configRect = computed<Konva.RectConfig>(() => {
@@ -29,30 +25,12 @@ const configRect = computed<Konva.RectConfig>(() => {
   }
 })
 
-const backgroundConfig = computed<Konva.RectConfig>(() => ({
-  x: -SPACE_WIDTH,
-  y: 0,
-  width: props.width + SPACE_WIDTH,
-  height: props.height,
-  fill: 'white',
-}))
-
 const configImage = computed<Konva.ImageConfig>(() => ({
   x: (props.width - IMAGE_WIDTH) / 2,
   y: (props.height - IMAGE_HEIGHT) / 2,
   width: IMAGE_WIDTH,
   height: IMAGE_HEIGHT,
   image: state.value,
-}))
-
-const textConfig = computed<Konva.TextConfig>(() => ({
-  text: props.type,
-  x: -SPACE_WIDTH,
-  y: props.height,
-  fontSize: TEXT_FONT_SIZE,
-  fill: 'red',
-  rotation: -90,
-  lineHeight: SPACE_WIDTH / TEXT_FONT_SIZE,
 }))
 
 // 生成 blocks
@@ -91,23 +69,10 @@ const configBlocks = computed<Konva.RectConfig[]>(() => {
 
   return blocks
 })
-
-function exportToImage() {
-  const dataURL = stageRef.value!.getStage().toDataURL({ pixelRatio: 1 })
-  downloadURI(dataURL, 'stage.jpg')
-}
-
-defineExpose({ exportToImage })
 </script>
 
 <template>
-  <v-stage ref="stage" :config="{ width: props.width + SPACE_WIDTH, height: props.height, offsetX: -SPACE_WIDTH }">
-    <v-layer>
-      <v-rect :config="backgroundConfig" />
-      <v-text :config="textConfig" />
-      <v-rect :config="configRect" />
-      <v-rect v-for="(item, idx) in configBlocks" :key="idx" :config="item" />
-      <v-image :config="configImage" />
-    </v-layer>
-  </v-stage>
+  <v-rect :config="configRect" />
+  <v-rect v-for="(item, idx) in configBlocks" :key="idx" :config="item" />
+  <v-image :config="configImage" />
 </template>

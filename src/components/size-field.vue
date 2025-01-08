@@ -1,15 +1,16 @@
 <script lang="ts" setup>
 import { NumberField, NumberFieldContent, NumberFieldDecrement, NumberFieldIncrement, NumberFieldInput } from '@/components/ui/number-field'
+import { CM_TO_PX } from '@/constants'
 import { computed } from 'vue'
 
 const props = defineProps<{ step?: number }>()
 
 const state = defineModel<number>({ default: 0 })
 
-const value = computed(() => state.value / 28.34645669)
+const value = computed(() => state.value / CM_TO_PX)
 
 function handleChange(num: number) {
-  state.value = num * 28.34645669
+  state.value = num * CM_TO_PX
 }
 </script>
 

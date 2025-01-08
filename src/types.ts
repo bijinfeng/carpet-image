@@ -6,7 +6,7 @@ export interface Size {
 }
 
 export interface RenderProps extends Size {
-  type: string
+  text: string
 }
 
 export interface CarpetData {
