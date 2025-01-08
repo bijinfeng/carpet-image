@@ -5,7 +5,7 @@ import RenderCanvas from './render.vue'
 
 export const moli: CarpetData = {
   id: 1,
-  name: '墨离',
+  name: '墨语',
   assetUrl: moliUrl,
   defaultSize: { width: 6814, height: 1614 },
   renderCanvas: props => h(RenderCanvas, props),

@@ -11,8 +11,8 @@ const IMAGE_WIDTH = 1511
 const IMAGE_HEIGHT = 123
 const BLOCK_SIZE = 60
 const BLOCK_PADDING = 30
-const SPACE_WIDTH = 100
-const TEXT_FONT_SIZE = 100
+const SPACE_WIDTH = 28.34645669
+const TEXT_FONT_SIZE = 24
 
 const stageRef = useTemplateRef<InstanceType<typeof Konva.Stage>>('stage')
 const { state } = useImage({ src: textImage })
@@ -94,7 +94,7 @@ const configBlocks = computed<Konva.RectConfig[]>(() => {
 
 function exportToImage() {
   const dataURL = stageRef.value!.getStage().toDataURL({ pixelRatio: 1 })
-  downloadURI(dataURL, 'stage.png')
+  downloadURI(dataURL, 'stage.jpg')
 }
 
 defineExpose({ exportToImage })
