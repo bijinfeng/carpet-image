@@ -10,9 +10,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { CM_TO_PX } from '@/constants'
+// import { CM_TO_PX } from '@/constants'
 import { useLayoutStore } from '@/stores/layout'
-import { round } from 'lodash-es'
+// import { round } from 'lodash-es'
 import { Download, Minus, Plus } from 'lucide-vue-next'
 
 import { storeToRefs } from 'pinia'
@@ -50,7 +50,7 @@ const renderText = computed(() => {
   return [
     typeNo.value,
     activeCarpet.value!.name,
-    `${round(size.value.width / CM_TO_PX, 3)}-${round(size.value.height / CM_TO_PX, 3)}`,
+    // `${round(size.value.width / CM_TO_PX, 3)}-${round(size.value.height / CM_TO_PX, 3)}`,
   ].join('')
 })
 

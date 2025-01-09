@@ -6,14 +6,19 @@ import lbFlower from '@/assets/zhongxia/lbhua.svg'
 import rtFlower from '@/assets/zhongxia/rthua.svg'
 import whiteWheatear from '@/assets/zhongxia/white-wheatear.svg'
 import textImage from '@/assets/zhongxia/zhongxia-text.svg'
+import { CM_TO_PX } from '@/constants'
 import { useImage } from '@vueuse/core'
 import { computed } from 'vue'
 
 const props = defineProps<RenderProps>()
+
+// 文字图片
 const IMAGE_WIDTH = 765
 const IMAGE_HEIGHT = 180
+// 右上角花朵图片
 const IMAGE_RTFLOWER_WIDTH = 531
 const IMAGE_RTFLOWER_HEIGHT = 339
+// 左下角花朵图片
 const IMAGE_LBFLOWER_WIDTH = 542
 const IMAGE_LBFLOWER_HEIGHT = 437
 const BLOCK_SIZE = 39
@@ -25,6 +30,14 @@ const { state: rtFlowerState } = useImage({ src: rtFlower })
 const { state: lbFlowerState } = useImage({ src: lbFlower })
 const { state: whiteWheatearState } = useImage({ src: whiteWheatear })
 const { state: blackWheatearState } = useImage({ src: blackWheatear })
+
+// 画布的宽大于 30cm 时，每超过 20 cm，图片就会变大 1.2 倍
+const imageScale = computed(() => {
+  const height = props.height / CM_TO_PX
+  if (height <= 30)
+    return 1
+  return 1 + Math.ceil((height - 30) / 20) * 0.2
+})
 
 const configRect = computed<Konva.RectConfig>(() => {
   return {
@@ -38,26 +51,26 @@ const configRect = computed<Konva.RectConfig>(() => {
 })
 
 const configImage = computed<Konva.ImageConfig>(() => ({
-  x: (props.width - IMAGE_WIDTH) / 2,
-  y: (props.height - IMAGE_HEIGHT) / 2,
-  width: IMAGE_WIDTH,
-  height: IMAGE_HEIGHT,
+  x: (props.width - IMAGE_WIDTH * imageScale.value) / 2,
+  y: (props.height - IMAGE_HEIGHT * imageScale.value) / 2,
+  width: IMAGE_WIDTH * imageScale.value,
+  height: IMAGE_HEIGHT * imageScale.value,
   image: state.value,
 }))
 
 const configImageRtFlower = computed<Konva.ImageConfig>(() => ({
-  x: props.width - IMAGE_RTFLOWER_WIDTH,
+  x: props.width - IMAGE_RTFLOWER_WIDTH * imageScale.value,
   y: 21,
-  width: IMAGE_RTFLOWER_WIDTH,
-  height: IMAGE_RTFLOWER_HEIGHT,
+  width: IMAGE_RTFLOWER_WIDTH * imageScale.value,
+  height: IMAGE_RTFLOWER_HEIGHT * imageScale.value,
   image: rtFlowerState.value,
 }))
 
 const configImageLbFlower = computed<Konva.ImageConfig>(() => ({
   x: -14,
-  y: props.height - IMAGE_LBFLOWER_HEIGHT,
-  width: IMAGE_LBFLOWER_WIDTH,
-  height: IMAGE_LBFLOWER_HEIGHT,
+  y: props.height - IMAGE_LBFLOWER_HEIGHT * imageScale.value,
+  width: IMAGE_LBFLOWER_WIDTH * imageScale.value,
+  height: IMAGE_LBFLOWER_HEIGHT * imageScale.value,
   image: lbFlowerState.value,
 }))
 
