@@ -7,7 +7,7 @@ export const zhongxia: CarpetData = {
   id: 2,
   name: '盛夏',
   assetUrl: zhongxiaUrl,
-  step: 1,
+  step: 0.1,
   defaultSize: { width: 3436, height: 879 },
   renderCanvas: props => h(RenderCanvas, props),
 }
