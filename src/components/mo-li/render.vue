@@ -2,6 +2,7 @@
 import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import textImage from '@/assets/moli/moli-text.jpg'
+import { useBlockSize } from '@/hooks'
 import { useImage } from '@vueuse/core'
 import { computed } from 'vue'
 
@@ -12,6 +13,8 @@ const BLOCK_SIZE = 60
 const BLOCK_PADDING = 30
 
 const { state } = useImage({ src: textImage })
+
+const blockSize = useBlockSize(props, BLOCK_SIZE, BLOCK_PADDING)
 
 const configRect = computed<Konva.RectConfig>(() => {
   return {
@@ -39,22 +42,22 @@ const configBlocks = computed<Konva.RectConfig[]>(() => {
   const commonBlock: Konva.RectConfig = {
     x: BLOCK_PADDING,
     y: BLOCK_PADDING,
-    width: BLOCK_SIZE,
-    height: BLOCK_SIZE,
+    width: blockSize.value,
+    height: blockSize.value,
     fill: 'balck',
   }
 
-  const maxWidth = props.width - BLOCK_PADDING
-  const maxHeight = props.height - BLOCK_PADDING
-  const horizontalBlockCount = Math.floor(maxWidth / BLOCK_SIZE)
-  const verticalBlockCount = Math.floor(maxHeight / BLOCK_SIZE)
+  const maxWidth = props.width - BLOCK_PADDING * 2
+  const maxHeight = props.height - BLOCK_PADDING * 2
+  const horizontalBlockCount = Math.floor(maxWidth / blockSize.value)
+  const verticalBlockCount = Math.floor(maxHeight / blockSize.value)
 
   for (let i = 0; i < horizontalBlockCount; i++) {
     // 是否是复数
     const isReverse = i % 2 === 0
     blocks.push(...[
-      { ...commonBlock, x: BLOCK_PADDING + i * BLOCK_SIZE, y: isReverse ? BLOCK_PADDING : BLOCK_PADDING + BLOCK_SIZE },
-      { ...commonBlock, x: BLOCK_PADDING + i * BLOCK_SIZE, y: isReverse ? maxHeight - BLOCK_SIZE : maxHeight - BLOCK_SIZE * 2 },
+      { ...commonBlock, x: BLOCK_PADDING + i * blockSize.value, y: isReverse ? BLOCK_PADDING : BLOCK_PADDING + blockSize.value },
+      { ...commonBlock, x: BLOCK_PADDING + i * blockSize.value, y: isReverse ? props.height - BLOCK_PADDING - blockSize.value : props.height - BLOCK_PADDING - blockSize.value * 2 },
     ])
   }
 
@@ -62,8 +65,8 @@ const configBlocks = computed<Konva.RectConfig[]>(() => {
     // 是否是复数
     const isReverse = i % 2 === 0
     blocks.push(...[
-      { ...commonBlock, x: isReverse ? BLOCK_PADDING : BLOCK_PADDING + BLOCK_SIZE, y: BLOCK_PADDING + BLOCK_SIZE * i },
-      { ...commonBlock, x: isReverse ? maxWidth - BLOCK_SIZE : maxWidth - BLOCK_SIZE * 2, y: BLOCK_PADDING + BLOCK_SIZE * i },
+      { ...commonBlock, x: isReverse ? BLOCK_PADDING : BLOCK_PADDING + blockSize.value, y: BLOCK_PADDING + blockSize.value * i },
+      { ...commonBlock, x: isReverse ? props.width - BLOCK_PADDING - blockSize.value : props.width - BLOCK_PADDING - blockSize.value * 2, y: BLOCK_PADDING + blockSize.value * i },
     ])
   }
 
