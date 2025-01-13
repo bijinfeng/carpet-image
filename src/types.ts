@@ -7,6 +7,7 @@ export interface Size {
 
 export interface RenderProps extends Size {
   text: string
+  radius?: number
 }
 
 export interface CarpetData {

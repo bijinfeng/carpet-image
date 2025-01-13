@@ -2,7 +2,6 @@
 import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import { TEXT_FONT_SIZE, TEXT_LINE_HEIGHT, TEXT_PRIMARY_COLOR } from '@/constants'
-import { downloadURI } from '@/lib/utils'
 import { computed, useTemplateRef } from 'vue'
 
 const props = defineProps<RenderProps>()
@@ -33,12 +32,51 @@ const stateConfig = computed<Konva.StageConfig>(() => ({
   offsetX: -TEXT_LINE_HEIGHT,
 }))
 
-function exportToImage() {
+const layerConfig = computed<Konva.LayerConfig>(() => ({
+  clipX: 0,
+  clipY: 0,
+  clipWidth: props.width,
+  clipHeight: props.height,
+  clipFunc(ctx) {
+    const radius = props.radius ?? 0 // 圆角半径
+    const width = props.width
+    const height = props.height
+
+    ctx.beginPath()
+    ctx.moveTo(radius, 0)
+    ctx.lineTo(width - radius, 0)
+    ctx.quadraticCurveTo(width, 0, width, radius)
+    ctx.lineTo(width, height - radius)
+    ctx.quadraticCurveTo(width, height, width - radius, height)
+    ctx.lineTo(radius, height)
+    ctx.quadraticCurveTo(0, height, 0, height - radius)
+    ctx.lineTo(0, radius)
+    ctx.quadraticCurveTo(0, 0, radius, 0)
+    ctx.closePath()
+  },
+}))
+
+function exportToTiff() {
   const dataURL = stageRef.value!.getStage().toDataURL({ pixelRatio: 1 })
-  downloadURI(dataURL, `${props.text}.jpg`)
+  const byteString = atob(dataURL.split(',')[1])
+  const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0]
+  const ab = new ArrayBuffer(byteString.length)
+  const ia = new Uint8Array(ab)
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i)
+  }
+  const blob = new Blob([ab], { type: mimeString })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `${props.text}.tif`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(url)
 }
 
-defineExpose({ exportToImage })
+defineExpose({ exportToImage: exportToTiff })
 </script>
 
 <template>
@@ -46,6 +84,9 @@ defineExpose({ exportToImage })
     <v-layer>
       <v-rect :config="backgroundConfig" />
       <v-text :config="textConfig" />
+    </v-layer>
+
+    <v-layer :config="layerConfig">
       <slot />
     </v-layer>
   </v-stage>
