@@ -11,7 +11,7 @@ const state = defineModel<number>({ default: 0 })
 const value = computed(() => round(state.value / CM_TO_PX, 1))
 
 function handleChange(num: number) {
-  state.value = num * CM_TO_PX
+  state.value = Math.round(num * CM_TO_PX)
 }
 </script>
 
