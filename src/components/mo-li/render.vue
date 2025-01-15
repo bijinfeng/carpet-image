@@ -2,7 +2,7 @@
 import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import textImage from '@/assets/moli/moli-text.jpg'
-import { useBlockSize } from '@/hooks'
+import { useBlockSize, useImageScale } from '@/hooks'
 import { useImage } from '@vueuse/core'
 import { computed } from 'vue'
 
@@ -15,6 +15,7 @@ const BLOCK_PADDING = 30
 const { state } = useImage({ src: textImage })
 
 const blockSize = useBlockSize(props, BLOCK_SIZE, BLOCK_PADDING)
+const imageScale = useImageScale(props)
 
 const configRect = computed<Konva.RectConfig>(() => {
   return {
@@ -29,10 +30,10 @@ const configRect = computed<Konva.RectConfig>(() => {
 })
 
 const configImage = computed<Konva.ImageConfig>(() => ({
-  x: (props.width - IMAGE_WIDTH) / 2,
-  y: (props.height - IMAGE_HEIGHT) / 2,
-  width: IMAGE_WIDTH,
-  height: IMAGE_HEIGHT,
+  x: (props.width - IMAGE_WIDTH * imageScale.value) / 2,
+  y: (props.height - IMAGE_HEIGHT * imageScale.value) / 2,
+  width: IMAGE_WIDTH * imageScale.value,
+  height: IMAGE_HEIGHT * imageScale.value,
   image: state.value,
 }))
 

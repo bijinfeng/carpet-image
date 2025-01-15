@@ -6,7 +6,7 @@ import lbFlower from '@/assets/zhongxia/lbhua.svg'
 import rtFlower from '@/assets/zhongxia/rthua.svg'
 import whiteWheatear from '@/assets/zhongxia/white-wheatear.svg'
 import textImage from '@/assets/zhongxia/zhongxia-text.svg'
-import { CM_TO_PX } from '@/constants'
+import { useImageScale } from '@/hooks'
 import { useImage } from '@vueuse/core'
 import { computed } from 'vue'
 
@@ -31,13 +31,7 @@ const { state: lbFlowerState } = useImage({ src: lbFlower })
 const { state: whiteWheatearState } = useImage({ src: whiteWheatear })
 const { state: blackWheatearState } = useImage({ src: blackWheatear })
 
-// 画布的宽大于 30cm 时，每超过 20 cm，图片就会变大 1.2 倍
-const imageScale = computed(() => {
-  const height = props.height / CM_TO_PX
-  if (height <= 30)
-    return 1
-  return 1 + Math.ceil((height - 30) / 20) * 0.2
-})
+const imageScale = useImageScale(props)
 
 const configRect = computed<Konva.RectConfig>(() => {
   return {
