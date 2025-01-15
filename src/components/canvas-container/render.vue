@@ -2,6 +2,7 @@
 import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import { TEXT_FONT_SIZE, TEXT_LINE_HEIGHT, TEXT_PRIMARY_COLOR } from '@/constants'
+import { base64ToArrayBuffer, rgbToCmyk } from '@/lib/utils'
 import { computed, useTemplateRef } from 'vue'
 
 const props = defineProps<RenderProps>()
@@ -56,16 +57,10 @@ const layerConfig = computed<Konva.LayerConfig>(() => ({
   },
 }))
 
-function exportToTiff() {
+async function exportToTiff() {
   const dataURL = stageRef.value!.getStage().toDataURL({ pixelRatio: 1 })
-  const byteString = atob(dataURL.split(',')[1])
-  const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0]
-  const ab = new ArrayBuffer(byteString.length)
-  const ia = new Uint8Array(ab)
-  for (let i = 0; i < byteString.length; i++) {
-    ia[i] = byteString.charCodeAt(i)
-  }
-  const blob = new Blob([ab], { type: mimeString })
+  const sourceBytes = base64ToArrayBuffer(dataURL)
+  const blob = await rgbToCmyk(sourceBytes)
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
