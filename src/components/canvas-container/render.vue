@@ -2,7 +2,7 @@
 import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import { TEXT_FONT_SIZE, TEXT_LINE_HEIGHT, TEXT_PRIMARY_COLOR } from '@/constants'
-import { base64ToArrayBuffer, rgbToCmyk } from '@/lib/utils'
+import { downloadURI, imageMagickConverter } from '@/lib/utils'
 import { computed, useTemplateRef } from 'vue'
 
 const props = defineProps<RenderProps>()
@@ -59,15 +59,9 @@ const layerConfig = computed<Konva.LayerConfig>(() => ({
 
 async function exportToTiff() {
   const dataURL = stageRef.value!.getStage().toDataURL({ pixelRatio: 1 })
-  const sourceBytes = base64ToArrayBuffer(dataURL)
-  const blob = await rgbToCmyk(sourceBytes)
+  const blob = await imageMagickConverter.rgbToCmyk(dataURL)
   const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = `${props.text}.tif`
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+  downloadURI(url, `${props.text}.tif`)
   URL.revokeObjectURL(url)
 }
 
