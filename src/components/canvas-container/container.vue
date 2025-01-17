@@ -135,7 +135,7 @@ watch(
 <template>
   <div
     ref="containerRef"
-    class="flex flex-1 flex-col bg-muted/40 overflow-hidden"
+    class="flex flex-1 flex-col bg-muted overflow-hidden"
     @wheel="handleWheel"
     @mousedown="handleMouseDown"
     @mousemove="handleMouseMove"

@@ -8,7 +8,7 @@ const layoutStore = useLayoutStore()
 </script>
 
 <template>
-  <div class="flex h-full max-h-screen flex-col gap-2 bg-muted/40">
+  <div class="flex h-full max-h-screen flex-col gap-2">
     <div class="flex h-[52px] box-content items-center border-b px-4 gap-2 font-semibold">
       <LogoIcon class="w-5 h-5" />
       <span>Acme Inc</span>

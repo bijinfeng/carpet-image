@@ -79,7 +79,7 @@ function handleDownload() {
 
 <template>
   <div class="flex h-full flex-col">
-    <div class="relative flex items-center px-4 py-2 h-[52px] bg-muted/40">
+    <div class="relative flex items-center px-4 py-2 h-[52px]">
       <Input v-model:model-value="typeNo" class="w-48 absolute" placeholder="备注" />
       <div class="flex-1 flex justify-center items-center">
         <SizeField v-model:model-value="size.width" class="w-32" :step="activeCarpet?.step" />
