@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import LogoIcon from '@/assets/logo.svg?component'
 import { Card } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useLayoutStore } from '@/stores/layout'
-import { Package2Icon } from 'lucide-vue-next'
 
 const layoutStore = useLayoutStore()
 </script>
@@ -10,7 +10,7 @@ const layoutStore = useLayoutStore()
 <template>
   <div class="flex h-full max-h-screen flex-col gap-2 bg-muted/40">
     <div class="flex h-[52px] box-content items-center border-b px-4 gap-2 font-semibold">
-      <Package2Icon class="w-6 h-6" />
+      <LogoIcon class="w-5 h-5" />
       <span>Acme Inc</span>
     </div>
     <ScrollArea class="p-2 flex-1">

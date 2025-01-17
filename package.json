@@ -1,7 +1,7 @@
 {
-  "name": "my-vue-app",
+  "name": "carpet",
   "type": "module",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf",
   "scripts": {
@@ -22,6 +22,7 @@
     "radix-vue": "^1.9.11",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
+    "vite-svg-loader": "^5.1.0",
     "vue": "^3.5.13",
     "vue-konva": "^3.2.0",
     "wasm-imagemagick": "^1.2.8"
