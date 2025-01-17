@@ -1,4 +1,4 @@
-import { ColorProfile, ColorSpace, ImageMagick, initializeImageMagick, MagickFormat } from '@imagemagick/magick-wasm'
+import { ColorProfile, ColorSpace, CompressionMethod, ImageMagick, initializeImageMagick, MagickFormat } from '@imagemagick/magick-wasm'
 
 class ImageMagickConverter {
   private initializePromise: Promise<void>
@@ -50,7 +50,12 @@ class ImageMagickConverter {
 
         // 将图像转换为 CMYK 色彩空间
         image.transformColorSpace(rgbProfile, cmykProfile)
+        // 设置颜色空间为 CMYK 和 8 位深度
         image.colorSpace = ColorSpace.CMYK
+        image.depth = 8
+
+        // 使用 Zip 压缩下图片
+        image.settings.compression = CompressionMethod.Zip
 
         image.write(MagickFormat.Tiff, (newData) => {
           // 在这里可以获取转换后的图像数据
