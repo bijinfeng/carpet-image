@@ -15,7 +15,7 @@ interface LayoutProps {
 }
 
 withDefaults(defineProps<LayoutProps>(), {
-  defaultLayout: () => [20, 80],
+  defaultLayout: () => [15, 85],
 })
 
 const layoutStore = useLayoutStore()
@@ -31,8 +31,8 @@ const layoutStore = useLayoutStore()
       <ResizablePanel
         id="resize-panel-1"
         :default-size="defaultLayout[0]"
-        :min-size="15"
-        :max-size="20"
+        :min-size="10"
+        :max-size="15"
       >
         <NavList />
       </ResizablePanel>
