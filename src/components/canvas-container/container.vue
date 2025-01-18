@@ -121,7 +121,6 @@ function handleMouseUp() {
 
 onMounted(() => {
   updateCanvasSize()
-  window.addEventListener('resize', updateCanvasSize)
 })
 
 watch(

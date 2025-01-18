@@ -63,35 +63,35 @@ function checkRadiusLock() {
       </div>
       <div class="gap-row">
         <template v-if="state.radiusLock">
-          <InputPanel v-model:model-value="values.radius.leftBottom">
+          <InputPanel v-model:model-value="values.radius.leftBottom" :min="0">
             <template #prefix>
               <LeftTopRadiusIcon />
             </template>
           </InputPanel>
         </template>
         <template v-else>
-          <InputPanel v-model:model-value="values.radius.leftTop" text-align="right">
+          <InputPanel v-model:model-value="values.radius.leftTop" text-align="right" :min="0">
             <template #suffix>
               <Tooltip content="左上角半径">
                 <LeftTopRadiusIcon />
               </Tooltip>
             </template>
           </InputPanel>
-          <InputPanel v-model:model-value="values.radius.rightTop">
+          <InputPanel v-model:model-value="values.radius.rightTop" :min="0">
             <template #prefix>
               <Tooltip content="右上角半径">
                 <RightTopRadiusIcon />
               </Tooltip>
             </template>
           </InputPanel>
-          <InputPanel :model-value="values.radius.leftBottom" text-align="right">
+          <InputPanel :model-value="values.radius.leftBottom" text-align="right" :min="0">
             <template #suffix>
               <Tooltip content="左下角半径">
                 <LeftBottomRadiusIcon />
               </Tooltip>
             </template>
           </InputPanel>
-          <InputPanel v-model:model-value="values.radius.rightBottom">
+          <InputPanel v-model:model-value="values.radius.rightBottom" :min="0">
             <template #prefix>
               <Tooltip content="右下角半径">
                 <RightBottomRadiusIcon />

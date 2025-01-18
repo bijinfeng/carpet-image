@@ -30,9 +30,7 @@ const contextState = reactive<IContextState>({
 
 const canvasRef = useTemplateRef<{ exportToImage: () => void }>('canvasRef')
 
-const renderText = computed(() => {
-  return [contextState.remark, props.data.name].join('')
-})
+const renderText = computed(() => [contextState.remark, props.data.name].join(''))
 
 const renderProps = computed<RenderProps>(() => ({
   width: contextState.width,
@@ -50,7 +48,7 @@ provide(contextKey, contextState)
 <template>
   <div class="flex h-full flex-col">
     <div class="relative flex items-center px-4 py-2 h-[52px]">
-      <Label class="leading-9 font-bold">xxx</Label>
+      <Label class="leading-9 font-bold">{{ props.data.name }}</Label>
       <div class="absolute flex items-center right-4 gap-2">
         <ScaleControl v-model:model-value="contextState.scale" />
         <Tooltip content="下载">
