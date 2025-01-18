@@ -6,28 +6,16 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Download } from 'lucide-vue-next'
 
-import { computed, provide, reactive, useTemplateRef } from 'vue'
+import { computed, useTemplateRef } from 'vue'
 import Container from './container.vue'
 import FormControl from './form.vue'
 import Render from './render.vue'
 import ScaleControl from './scale-control.vue'
-import { contextKey, type IContextState } from './types'
+import { useProvideContextStore } from './store'
 
 const props = defineProps<{ data: CarpetData }>()
 
-const contextState = reactive<IContextState>({
-  width: props.data.defaultSize.width,
-  height: props.data.defaultSize.height,
-  scale: 1,
-  remark: '',
-  radius: {
-    leftTop: 0,
-    rightTop: 0,
-    rightBottom: 0,
-    leftBottom: 0,
-  },
-})
-
+const { contextState } = useProvideContextStore(props.data)
 const canvasRef = useTemplateRef<{ exportToImage: () => void }>('canvasRef')
 
 const renderText = computed(() => [contextState.remark, props.data.name].join(''))
@@ -41,8 +29,6 @@ const renderProps = computed<RenderProps>(() => ({
 function handleDownload() {
   canvasRef.value?.exportToImage()
 }
-
-provide(contextKey, contextState)
 </script>
 
 <template>
