@@ -13,17 +13,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { LockIcon, LockOpenIcon, MaximizeIcon } from 'lucide-vue-next'
-import { reactive } from 'vue'
+import { inject, reactive } from 'vue'
+import { contextKey, type IContextState } from './types'
 
-const values = reactive({
-  width: 100,
-  height: 100,
-  leftTopRadius: 0,
-  rightTopRadius: 0,
-  rightBottomRadius: 0,
-  leftBottomRadius: 0,
-  remark: '',
-})
+const values = inject<IContextState>(contextKey)!
 
 const state = reactive({
   sizeLock: false, // 锁定宽高比
@@ -70,35 +63,35 @@ function checkRadiusLock() {
       </div>
       <div class="gap-row">
         <template v-if="state.radiusLock">
-          <InputPanel v-model:model-value="values.leftTopRadius">
+          <InputPanel v-model:model-value="values.radius.leftBottom">
             <template #prefix>
               <LeftTopRadiusIcon />
             </template>
           </InputPanel>
         </template>
         <template v-else>
-          <InputPanel v-model:model-value="values.leftTopRadius" text-align="right">
+          <InputPanel v-model:model-value="values.radius.leftTop" text-align="right">
             <template #suffix>
               <Tooltip content="左上角半径">
                 <LeftTopRadiusIcon />
               </Tooltip>
             </template>
           </InputPanel>
-          <InputPanel v-model:model-value="values.rightTopRadius">
+          <InputPanel v-model:model-value="values.radius.rightTop">
             <template #prefix>
               <Tooltip content="右上角半径">
                 <RightTopRadiusIcon />
               </Tooltip>
             </template>
           </InputPanel>
-          <InputPanel :model-value="values.leftBottomRadius" text-align="right">
+          <InputPanel :model-value="values.radius.leftBottom" text-align="right">
             <template #suffix>
               <Tooltip content="左下角半径">
                 <LeftBottomRadiusIcon />
               </Tooltip>
             </template>
           </InputPanel>
-          <InputPanel v-model:model-value="values.rightBottomRadius">
+          <InputPanel v-model:model-value="values.radius.rightBottom">
             <template #prefix>
               <Tooltip content="右下角半径">
                 <RightBottomRadiusIcon />

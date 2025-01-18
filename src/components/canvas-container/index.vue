@@ -1,40 +1,50 @@
 <script setup lang="ts">
-import type { RenderProps, Size } from '@/types'
+import type { CarpetData, RenderProps } from '@/types'
 import Tooltip from '@/components/tooltip.vue'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import { useLayoutStore } from '@/stores/layout'
 import { Download } from 'lucide-vue-next'
 
-import { storeToRefs } from 'pinia'
-import { computed, ref, useTemplateRef } from 'vue'
+import { computed, provide, reactive, useTemplateRef } from 'vue'
 import Container from './container.vue'
 import FormControl from './form.vue'
 import Render from './render.vue'
 import ScaleControl from './scale-control.vue'
+import { contextKey, type IContextState } from './types'
 
-const layoutStore = useLayoutStore()
-const { activeCarpet } = storeToRefs(layoutStore)
+const props = defineProps<{ data: CarpetData }>()
 
-const scale = ref(1)
-const typeNo = ref('')
-const size = ref<Size>(activeCarpet.value!.defaultSize)
+const contextState = reactive<IContextState>({
+  width: props.data.defaultSize.width,
+  height: props.data.defaultSize.height,
+  scale: 1,
+  remark: '',
+  radius: {
+    leftTop: 0,
+    rightTop: 0,
+    rightBottom: 0,
+    leftBottom: 0,
+  },
+})
+
 const canvasRef = useTemplateRef<{ exportToImage: () => void }>('canvasRef')
 
 const renderText = computed(() => {
-  return [typeNo.value, activeCarpet.value!.name].join('')
+  return [contextState.remark, props.data.name].join('')
 })
 
 const renderProps = computed<RenderProps>(() => ({
-  width: size.value.width,
-  height: size.value.height,
+  width: contextState.width,
+  height: contextState.height,
   text: renderText.value,
 }))
 
 function handleDownload() {
   canvasRef.value?.exportToImage()
 }
+
+provide(contextKey, contextState)
 </script>
 
 <template>
@@ -42,7 +52,7 @@ function handleDownload() {
     <div class="relative flex items-center px-4 py-2 h-[52px]">
       <Label class="leading-9 font-bold">xxx</Label>
       <div class="absolute flex items-center right-4 gap-2">
-        <ScaleControl v-model:model-value="scale" />
+        <ScaleControl v-model:model-value="contextState.scale" />
         <Tooltip content="下载">
           <Button variant="ghost" size="icon" @click="handleDownload">
             <Download class="size-4" />
@@ -54,17 +64,16 @@ function handleDownload() {
     <Separator />
     <div class="flex flex-1">
       <Container
-        v-if="activeCarpet"
-        v-model:scale="scale"
-        :width="size.width"
-        :height="size.height"
+        v-model:scale="contextState.scale"
+        :width="contextState.width"
+        :height="contextState.height"
       >
         <Render
           ref="canvasRef"
-          :key="`${size.width}_${size.height}`"
+          :key="`${contextState.width}_${contextState.height}`"
           v-bind="renderProps"
         >
-          <component :is="activeCarpet.renderCanvas(renderProps)" />
+          <component :is="props.data.renderCanvas(renderProps)" />
         </Render>
       </Container>
       <Separator orientation="vertical" />

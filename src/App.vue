@@ -41,7 +41,10 @@ const layoutStore = useLayoutStore()
         id="resize-panel-2"
         :default-size="defaultLayout[1]"
       >
-        <CanvasContainer :key="layoutStore.activeCarpetId" />
+        <CanvasContainer
+          :key="layoutStore.activeCarpetId"
+          :data="layoutStore.activeCarpet"
+        />
       </ResizablePanel>
     </ResizablePanelGroup>
   </TooltipProvider>
