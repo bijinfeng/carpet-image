@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import { TEXT_FONT_SIZE, TEXT_LINE_HEIGHT, TEXT_PRIMARY_COLOR } from '@/constants'
 import { downloadURI, imageMagickConverter } from '@/lib/utils'
+import { useLayoutStore } from '@/stores/layout'
+import { storeToRefs } from 'pinia'
 import { computed, useTemplateRef } from 'vue'
 
-const props = defineProps<RenderProps>()
+const layoutStore = useLayoutStore()
+const { contextState } = storeToRefs(layoutStore)
 
 const stageRef = useTemplateRef<InstanceType<typeof Konva.Stage>>('stage')
 
+const text = computed(() => contextState.value.remark + contextState.value.carpetName)
+
 const textConfig = computed<Konva.TextConfig>(() => ({
-  text: props.text,
+  text: text.value,
   x: -TEXT_LINE_HEIGHT,
-  y: props.height,
+  y: contextState.value.height,
   fontSize: TEXT_FONT_SIZE,
   fill: TEXT_PRIMARY_COLOR,
   rotation: -90,
@@ -22,46 +26,47 @@ const textConfig = computed<Konva.TextConfig>(() => ({
 const backgroundConfig = computed<Konva.RectConfig>(() => ({
   x: -TEXT_LINE_HEIGHT,
   y: 0,
-  width: props.width + TEXT_LINE_HEIGHT,
-  height: props.height,
+  width: contextState.value.width + TEXT_LINE_HEIGHT,
+  height: contextState.value.height,
   fill: 'white',
 }))
 
 const stateConfig = computed<Konva.StageConfig>(() => ({
-  width: props.width + TEXT_LINE_HEIGHT,
-  height: props.height,
+  width: contextState.value.width + TEXT_LINE_HEIGHT,
+  height: contextState.value.height,
   offsetX: -TEXT_LINE_HEIGHT,
 }))
 
-const layerConfig = computed<Konva.LayerConfig>(() => ({
-  clipX: 0,
-  clipY: 0,
-  clipWidth: props.width,
-  clipHeight: props.height,
-  clipFunc(ctx) {
-    const radius = props.radius ?? 0 // 圆角半径
-    const width = props.width
-    const height = props.height
+const layerConfig = computed<Konva.LayerConfig>(() => {
+  const { width, height, radius } = contextState.value
+  const { leftTop, rightTop, rightBottom, leftBottom } = radius
 
-    ctx.beginPath()
-    ctx.moveTo(radius, 0)
-    ctx.lineTo(width - radius, 0)
-    ctx.quadraticCurveTo(width, 0, width, radius)
-    ctx.lineTo(width, height - radius)
-    ctx.quadraticCurveTo(width, height, width - radius, height)
-    ctx.lineTo(radius, height)
-    ctx.quadraticCurveTo(0, height, 0, height - radius)
-    ctx.lineTo(0, radius)
-    ctx.quadraticCurveTo(0, 0, radius, 0)
-    ctx.closePath()
-  },
-}))
+  return {
+    clipX: 0,
+    clipY: 0,
+    clipWidth: width,
+    clipHeight: height,
+    clipFunc(ctx) {
+      ctx.beginPath()
+      ctx.moveTo(leftTop, 0)
+      ctx.lineTo(width - rightTop, 0)
+      ctx.quadraticCurveTo(width, 0, width, rightTop)
+      ctx.lineTo(width, height - rightBottom)
+      ctx.quadraticCurveTo(width, height, width - rightBottom, height)
+      ctx.lineTo(leftBottom, height)
+      ctx.quadraticCurveTo(0, height, 0, height - leftBottom)
+      ctx.lineTo(0, leftTop)
+      ctx.quadraticCurveTo(0, 0, leftTop, 0)
+      ctx.closePath()
+    },
+  }
+})
 
 async function exportToTiff() {
   const dataURL = stageRef.value!.getStage().toDataURL({ pixelRatio: 1 })
   const blob = await imageMagickConverter.rgbToCmyk(dataURL)
   const url = URL.createObjectURL(blob)
-  downloadURI(url, `${props.text}.tif`)
+  downloadURI(url, `${text.value}.tif`)
   URL.revokeObjectURL(url)
 }
 

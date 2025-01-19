@@ -1,13 +1,13 @@
-import type { CarpetData } from '@/types'
+import type { CarpetData, IContextState } from '@/types'
 import { moli } from '@/components/mo-li'
 import { zhongxia } from '@/components/zhongxia'
 
 import { defineStore } from 'pinia'
 import { reactive, ref } from 'vue'
 
-function createContextState(data: CarpetData) {
+function createContextState(data: CarpetData): IContextState {
   return {
-    name: data.name,
+    carpetName: data.name,
     width: data.defaultSize.width,
     height: data.defaultSize.height,
     scale: 1,

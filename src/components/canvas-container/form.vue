@@ -13,9 +13,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useLayoutStore } from '@/stores/layout'
 import { LockIcon, LockOpenIcon, MaximizeIcon } from 'lucide-vue-next'
+import { storeToRefs } from 'pinia'
 import { reactive } from 'vue'
 
 const layoutStore = useLayoutStore()
+const { contextState } = storeToRefs(layoutStore)
 
 const state = reactive({
   sizeLock: false, // 锁定宽高比
@@ -29,6 +31,15 @@ function checkSizeLock() {
 function checkRadiusLock() {
   state.radiusLock = !state.radiusLock
 }
+
+function changeAllRadius(val: number) {
+  contextState.value.radius = {
+    leftTop: val,
+    rightTop: val,
+    rightBottom: val,
+    leftBottom: val,
+  }
+}
 </script>
 
 <template>
@@ -38,12 +49,12 @@ function checkRadiusLock() {
         <Label class="font-bold text-xs px-[6px]">尺寸</Label>
       </div>
       <div class="gap-row ">
-        <InputPanel v-model:model-value="layoutStore.contextState.width">
+        <InputPanel v-model:model-value="contextState.width">
           <template #prefix>
             <WIcon />
           </template>
         </InputPanel>
-        <InputPanel v-model:model-value="layoutStore.contextState.height">
+        <InputPanel v-model:model-value="contextState.height">
           <template #prefix>
             <HIcon />
           </template>
@@ -62,35 +73,39 @@ function checkRadiusLock() {
       </div>
       <div class="gap-row">
         <template v-if="state.radiusLock">
-          <InputPanel v-model:model-value="layoutStore.contextState.radius.leftBottom" :min="0">
+          <InputPanel
+            :model-value="contextState.radius.leftTop"
+            :min="0"
+            @update:model-value="changeAllRadius"
+          >
             <template #prefix>
               <LeftTopRadiusIcon />
             </template>
           </InputPanel>
         </template>
         <template v-else>
-          <InputPanel v-model:model-value="layoutStore.contextState.radius.leftTop" text-align="right" :min="0">
+          <InputPanel v-model:model-value="contextState.radius.leftTop" text-align="right" :min="0">
             <template #suffix>
               <Tooltip content="左上角半径">
                 <LeftTopRadiusIcon />
               </Tooltip>
             </template>
           </InputPanel>
-          <InputPanel v-model:model-value="layoutStore.contextState.radius.rightTop" :min="0">
+          <InputPanel v-model:model-value="contextState.radius.rightTop" :min="0">
             <template #prefix>
               <Tooltip content="右上角半径">
                 <RightTopRadiusIcon />
               </Tooltip>
             </template>
           </InputPanel>
-          <InputPanel v-model:model-value="layoutStore.contextState.radius.leftBottom" text-align="right" :min="0">
+          <InputPanel v-model:model-value="contextState.radius.leftBottom" text-align="right" :min="0">
             <template #suffix>
               <Tooltip content="左下角半径">
                 <LeftBottomRadiusIcon />
               </Tooltip>
             </template>
           </InputPanel>
-          <InputPanel v-model:model-value="layoutStore.contextState.radius.rightBottom" :min="0">
+          <InputPanel v-model:model-value="contextState.radius.rightBottom" :min="0">
             <template #prefix>
               <Tooltip content="右下角半径">
                 <RightBottomRadiusIcon />
@@ -116,7 +131,7 @@ function checkRadiusLock() {
       </div>
 
       <div class="px-2.5">
-        <Input v-model:model-value="layoutStore.contextState.remark" type="text" />
+        <Input v-model:model-value="contextState.remark" type="text" />
       </div>
     </div>
   </div>

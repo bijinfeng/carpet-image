@@ -5,10 +5,21 @@ export interface Size {
   height: number
 }
 
-export interface RenderProps extends Size {
-  text: string
-  radius?: number
+export interface IRadius {
+  leftTop: number
+  rightTop: number
+  rightBottom: number
+  leftBottom: number
 }
+
+export interface IContextState extends Size {
+  carpetName: string
+  radius: IRadius
+  remark: string
+  scale: number
+}
+
+export type RenderProps = IContextState
 
 export interface CarpetData {
   id: number
@@ -17,17 +28,4 @@ export interface CarpetData {
   defaultSize: Size
   step?: number
   renderCanvas: (props: RenderProps) => VNode
-}
-
-export interface IContextState {
-  width: number
-  height: number
-  radius: {
-    leftTop: number
-    rightTop: number
-    rightBottom: number
-    leftBottom: number
-  }
-  remark: string
-  scale: number
 }
