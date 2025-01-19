@@ -1,65 +1,44 @@
 <script setup lang="ts">
-import { useElementSize } from '@vueuse/core'
+import { useLayoutStore } from '@/stores/layout'
+import { storeToRefs } from 'pinia'
 import {
-  computed,
-  onMounted,
   reactive,
   ref,
-  type StyleValue,
   useTemplateRef,
   watch,
 } from 'vue'
 
-export interface CanvasState {
-  offsetX: number
-  offsetY: number
-}
+const layoutStore = useLayoutStore()
+const { contextState } = storeToRefs(layoutStore)
 
 export interface CanvasProps {
   width: number
   height: number
 }
 
-const props = defineProps<CanvasProps>()
-const scaleState = defineModel('scale', { type: Number, default: 1 })
 const containerRef = useTemplateRef('containerRef')
-const containerSize = useElementSize(containerRef)
 
-const canvasSize = reactive({ width: props.width, height: props.height })
-const state = reactive<CanvasState>({
-  offsetX: 0,
-  offsetY: 0,
-})
-
-const contentStyle = computed<StyleValue>(() => ({
-  transform: `translate(${state.offsetX}px, ${state.offsetY}px) scale(${scaleState.value})`,
-  transformOrigin: '0 0',
-  width: canvasSize.width,
-  height: canvasSize.height,
-}))
+const state = reactive({ offsetX: 0, offsetY: 0 })
 
 const isDragging = ref(false)
 const lastMousePos = reactive({ x: 0, y: 0 })
 
 function updateCanvasSize() {
   if (containerRef.value) {
-    const containerWidth = containerSize.width.value
-    const containerHeight = containerSize.height.value
+    const containerWidth = containerRef.value.clientWidth
+    const containerHeight = containerRef.value.clientHeight
     const containerScale = 3 / 4
 
     const scale = Math.min(
-      (containerWidth * containerScale) / props.width,
-      (containerHeight * containerScale) / props.height,
+      (containerWidth * containerScale) / contextState.value.width,
+      (containerHeight * containerScale) / contextState.value.height,
       1,
     )
 
-    const scaledWidth = props.width * scale
-    const scaledHeight = props.height * scale
+    const scaledWidth = contextState.value.width * scale
+    const scaledHeight = contextState.value.height * scale
 
-    canvasSize.width = scaledWidth
-    canvasSize.height = scaledHeight
-
-    scaleState.value = scale
+    contextState.value.scale = scale
     state.offsetX = (containerWidth - scaledWidth) / 2
     state.offsetY = (containerHeight - scaledHeight) / 2
   }
@@ -81,16 +60,16 @@ function handleWheel(event: WheelEvent) {
   const adjustedScaleFactor = scaleFactor * deltaFactor
   const newScale
     = deltaY > 0
-      ? scaleState.value * (1 - adjustedScaleFactor)
-      : scaleState.value * (1 + adjustedScaleFactor)
+      ? contextState.value.scale * (1 - adjustedScaleFactor)
+      : contextState.value.scale * (1 + adjustedScaleFactor)
 
-  const scaleChange = newScale - scaleState.value
+  const scaleChange = newScale - contextState.value.scale
   const newOffsetX
-    = state.offsetX - (x - state.offsetX) * (scaleChange / scaleState.value)
+    = state.offsetX - (x - state.offsetX) * (scaleChange / contextState.value.scale)
   const newOffsetY
-    = state.offsetY - (y - state.offsetY) * (scaleChange / scaleState.value)
+    = state.offsetY - (y - state.offsetY) * (scaleChange / contextState.value.scale)
 
-  scaleState.value = Math.max(0.01, Math.min(10, newScale))
+  contextState.value.scale = Math.max(0.01, Math.min(10, newScale))
   state.offsetX = newOffsetX
   state.offsetY = newOffsetY
 }
@@ -119,30 +98,27 @@ function handleMouseUp() {
   isDragging.value = false
 }
 
-onMounted(() => {
-  updateCanvasSize()
-})
-
 watch(
-  () => [props.width, props.height],
-  () => {
-    updateCanvasSize()
-  },
+  () => [contextState.value.width, contextState.value.height],
+  () => updateCanvasSize(),
+  { immediate: true, flush: 'post' },
 )
 </script>
 
 <template>
   <div
     ref="containerRef"
-    class="flex flex-1 flex-col bg-muted overflow-hidden"
+    class="flex relative flex-1 bg-muted overflow-hidden"
     @wheel="handleWheel"
     @mousedown="handleMouseDown"
     @mousemove="handleMouseMove"
     @mouseup="handleMouseUp"
     @mouseleave="handleMouseUp"
   >
-    <div class="cursor-pointer" :style="contentStyle">
-      <slot />
+    <div class="cursor-pointer absolute" :style="{ left: `${state.offsetX}px`, top: `${state.offsetY}px` }">
+      <div :style="{ zoom: contextState.scale }">
+        <slot />
+      </div>
     </div>
   </div>
 </template>

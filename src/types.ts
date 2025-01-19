@@ -18,3 +18,16 @@ export interface CarpetData {
   step?: number
   renderCanvas: (props: RenderProps) => VNode
 }
+
+export interface IContextState {
+  width: number
+  height: number
+  radius: {
+    leftTop: number
+    rightTop: number
+    rightBottom: number
+    leftBottom: number
+  }
+  remark: string
+  scale: number
+}

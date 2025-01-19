@@ -3,15 +3,35 @@ import { moli } from '@/components/mo-li'
 import { zhongxia } from '@/components/zhongxia'
 
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { reactive, ref } from 'vue'
+
+function createContextState(data: CarpetData) {
+  return {
+    name: data.name,
+    width: data.defaultSize.width,
+    height: data.defaultSize.height,
+    scale: 1,
+    remark: '',
+    radius: {
+      leftTop: 0,
+      rightTop: 0,
+      rightBottom: 0,
+      leftBottom: 0,
+    },
+  }
+}
 
 export const useLayoutStore = defineStore('layout', () => {
   const carpetList = ref<CarpetData[]>([moli, zhongxia])
   const activeCarpetId = ref<number>(carpetList.value[0].id)
+  const activeCarpet = ref<CarpetData>(carpetList.value[0])
+  const contextState = reactive(createContextState(carpetList.value[0]))
 
-  const activeCarpet = computed<CarpetData>(() => carpetList.value.find(it => it.id === activeCarpetId.value)!)
+  const switchCarpet = (item: CarpetData) => {
+    activeCarpetId.value = item.id
+    activeCarpet.value = item
+    Object.assign(contextState, createContextState(item))
+  }
 
-  const switchCarpet = (id: number) => activeCarpetId.value = id
-
-  return { carpetList, activeCarpet, activeCarpetId, switchCarpet }
+  return { carpetList, activeCarpet, activeCarpetId, contextState, switchCarpet }
 })

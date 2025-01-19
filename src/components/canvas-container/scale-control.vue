@@ -8,16 +8,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Label } from '@/components/ui/label'
-import { useVModel } from '@vueuse/core'
+import { useLayoutStore } from '@/stores/layout'
 import { Minus, Plus } from 'lucide-vue-next'
+import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 
-const props = defineProps<{
-  modelValue: number
-}>()
-const emits = defineEmits<{
-  (e: 'update:modelValue', payload: string | number): void
-}>()
 const MIN_SCALE = 0.1
 const MAX_SCALE = 2
 const SCALE_STEP = 0.05
@@ -31,24 +26,23 @@ const scaleMaps = [
   { label: '50%', value: 0.5 },
 ]
 
-const scale = useVModel(props, 'modelValue', emits, {
-  passive: true,
-})
+const layoutStore = useLayoutStore()
+const { contextState } = storeToRefs(layoutStore)
 
 const scaleText = computed(() => {
-  return `${Math.round(scale.value * 100)}%`
+  return `${Math.round(contextState.value.scale * 100)}%`
 })
 
 function setScale(num: number) {
-  scale.value = num
+  contextState.value.scale = num
 }
 
 function plusScale() {
-  scale.value = Math.min(MAX_SCALE, scale.value + SCALE_STEP)
+  contextState.value.scale = Math.min(MAX_SCALE, contextState.value.scale + SCALE_STEP)
 }
 
 function minusScale() {
-  scale.value = Math.max(MIN_SCALE, scale.value - SCALE_STEP)
+  contextState.value.scale = Math.max(MIN_SCALE, contextState.value.scale - SCALE_STEP)
 }
 </script>
 
@@ -57,7 +51,7 @@ function minusScale() {
     <Button
       variant="ghost"
       size="icon"
-      :disabled="scale <= MIN_SCALE"
+      :disabled="contextState.scale <= MIN_SCALE"
       @click="minusScale"
     >
       <Minus class="size-4" />
@@ -87,7 +81,7 @@ function minusScale() {
     <Button
       variant="ghost"
       size="icon"
-      :disabled="scale >= MAX_SCALE"
+      :disabled="contextState.scale >= MAX_SCALE"
       @click="plusScale"
     >
       <Plus class="size-4" />

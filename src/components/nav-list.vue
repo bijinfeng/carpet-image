@@ -22,7 +22,7 @@ const layoutStore = useLayoutStore()
         v-for="item in layoutStore.carpetList"
         :key="item.id"
         class="p-3 cursor-pointer mb-2"
-        @click="() => layoutStore.switchCarpet(item.id)"
+        @click="() => layoutStore.switchCarpet(item)"
       >
         <div class="overflow-hidden aspect-[10/3]">
           <img
