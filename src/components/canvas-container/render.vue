@@ -37,31 +37,6 @@ const stateConfig = computed<Konva.StageConfig>(() => ({
   offsetX: -TEXT_LINE_HEIGHT,
 }))
 
-const layerConfig = computed<Konva.LayerConfig>(() => {
-  const { width, height, radius } = contextState.value
-  const { leftTop, rightTop, rightBottom, leftBottom } = radius
-
-  return {
-    clipX: 0,
-    clipY: 0,
-    clipWidth: width,
-    clipHeight: height,
-    clipFunc(ctx) {
-      ctx.beginPath()
-      ctx.moveTo(leftTop, 0)
-      ctx.lineTo(width - rightTop, 0)
-      ctx.quadraticCurveTo(width, 0, width, rightTop)
-      ctx.lineTo(width, height - rightBottom)
-      ctx.quadraticCurveTo(width, height, width - rightBottom, height)
-      ctx.lineTo(leftBottom, height)
-      ctx.quadraticCurveTo(0, height, 0, height - leftBottom)
-      ctx.lineTo(0, leftTop)
-      ctx.quadraticCurveTo(0, 0, leftTop, 0)
-      ctx.closePath()
-    },
-  }
-})
-
 async function exportToTiff() {
   const dataURL = stageRef.value!.getStage().toDataURL({ pixelRatio: 1 })
   const blob = await imageMagickConverter.rgbToCmyk(dataURL)
@@ -80,7 +55,7 @@ defineExpose({ exportToImage: exportToTiff })
       <v-text :config="textConfig" />
     </v-layer>
 
-    <v-layer :config="layerConfig">
+    <v-layer>
       <slot />
     </v-layer>
   </v-stage>

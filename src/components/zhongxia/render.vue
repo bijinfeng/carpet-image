@@ -6,7 +6,7 @@ import lbFlower from '@/assets/zhongxia/lbhua.svg?url'
 import rtFlower from '@/assets/zhongxia/rthua.svg?url'
 import whiteWheatear from '@/assets/zhongxia/white-wheatear.svg?url'
 import textImage from '@/assets/zhongxia/zhongxia-text.svg?url'
-import { useImageScale } from '@/hooks'
+import { useImageScale, useShapeConfig } from '@/hooks'
 import { useImage } from '@vueuse/core'
 import { computed } from 'vue'
 
@@ -33,16 +33,7 @@ const { state: blackWheatearState } = useImage({ src: blackWheatear })
 
 const imageScale = useImageScale(props)
 
-const configRect = computed<Konva.RectConfig>(() => {
-  return {
-    x: RECT_SIZE / 2,
-    y: RECT_SIZE / 2,
-    width: props.width - RECT_SIZE,
-    height: props.height - RECT_SIZE,
-    stroke: 'black',
-    strokeWidth: RECT_SIZE,
-  }
-})
+const shapeConfig = useShapeConfig(props, RECT_SIZE)
 
 const configImage = computed<Konva.ImageConfig>(() => ({
   x: (props.width - IMAGE_WIDTH * imageScale.value) / 2,
@@ -115,7 +106,7 @@ const configBlocks = computed<Konva.ImageConfig[]>(() => {
   <v-image :config="configImage" />
   <v-image :config="configImageRtFlower" />
   <v-image :config="configImageLbFlower" />
-  <v-rect :config="configRect" />
+  <v-shape :config="shapeConfig" />
 
   <v-image v-for="(item, idx) in configBlocks" :key="idx" :config="item" />
 </template>

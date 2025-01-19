@@ -2,7 +2,7 @@
 import type { RenderProps } from '@/types'
 import type Konva from 'konva'
 import textImage from '@/assets/moli/moli-text.jpg'
-import { useBlockSize, useImageScale } from '@/hooks'
+import { useBlockSize, useImageScale, useShapeConfig } from '@/hooks'
 import { useImage } from '@vueuse/core'
 import { computed } from 'vue'
 
@@ -17,17 +17,7 @@ const { state } = useImage({ src: textImage })
 const blockSize = useBlockSize(props, BLOCK_SIZE, BLOCK_PADDING)
 const imageScale = useImageScale(props)
 
-const configRect = computed<Konva.RectConfig>(() => {
-  return {
-    x: BLOCK_PADDING / 2,
-    y: BLOCK_PADDING / 2,
-    width: props.width - BLOCK_PADDING,
-    height: props.height - BLOCK_PADDING,
-    stroke: 'black',
-    strokeWidth: BLOCK_PADDING,
-    fill: 'white',
-  }
-})
+const shapeConfig = useShapeConfig(props, BLOCK_PADDING)
 
 const configImage = computed<Konva.ImageConfig>(() => ({
   x: (props.width - IMAGE_WIDTH * imageScale.value) / 2,
@@ -76,7 +66,7 @@ const configBlocks = computed<Konva.RectConfig[]>(() => {
 </script>
 
 <template>
-  <v-rect :config="configRect" />
+  <v-shape :config="shapeConfig" />
   <v-rect v-for="(item, idx) in configBlocks" :key="idx" :config="item" />
   <v-image :config="configImage" />
 </template>

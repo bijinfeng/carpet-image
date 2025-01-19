@@ -1,5 +1,5 @@
 import type { CarpetData, IContextState } from '@/types'
-import { moli } from '@/components/mo-li'
+import { moli } from '@/components/moli'
 import { zhongxia } from '@/components/zhongxia'
 
 import { defineStore } from 'pinia'
