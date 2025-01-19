@@ -40,6 +40,22 @@ function changeAllRadius(val: number) {
     leftBottom: val,
   }
 }
+
+function changeWidth(val: number) {
+  if (state.sizeLock) {
+    contextState.value.height = contextState.value.height / contextState.value.width * val
+  }
+
+  contextState.value.width = val
+}
+
+function changeHeight(val: number) {
+  if (state.sizeLock) {
+    contextState.value.width = contextState.value.width / contextState.value.height * val
+  }
+
+  contextState.value.height = val
+}
 </script>
 
 <template>
@@ -49,12 +65,12 @@ function changeAllRadius(val: number) {
         <Label class="font-bold text-xs px-[6px]">尺寸</Label>
       </div>
       <div class="gap-row ">
-        <InputPanel v-model:model-value="contextState.width">
+        <InputPanel :model-value="contextState.width" @update:model-value="changeWidth">
           <template #prefix>
             <WIcon />
           </template>
         </InputPanel>
-        <InputPanel v-model:model-value="contextState.height">
+        <InputPanel :model-value="contextState.height" @update:model-value="changeHeight">
           <template #prefix>
             <HIcon />
           </template>
