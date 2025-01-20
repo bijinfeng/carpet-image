@@ -3,7 +3,7 @@ import { ColorProfile, ColorSpace, CompressionMethod, ImageMagick, initializeIma
 class ImageMagickConverter {
   private initializePromise: Promise<void>
   private profileNameMaps = {
-    cmyk: 'USWebCoatedSWOP.icc',
+    cmyk: 'JapanColor2001Coated.icc',
     rgb: 'SRGB.icm',
   }
 
