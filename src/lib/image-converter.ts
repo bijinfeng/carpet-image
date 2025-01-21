@@ -43,13 +43,9 @@ class ImageMagickConverter {
     return new Promise((resolve) => {
       // 从 Base64 数据 URL 创建 Image
       ImageMagick.read(sourceBytes, MagickFormat.Png, async (image) => {
-        const [rgbProfile, cmykProfile] = await Promise.all([
-          this.fetchIccProfile('rgb'),
-          this.fetchIccProfile('cmyk'),
-        ])
-
+        const cmykProfile = await this.fetchIccProfile('cmyk')
         // 将图像转换为 CMYK 色彩空间
-        image.transformColorSpace(rgbProfile, cmykProfile)
+        image.transformColorSpace(cmykProfile)
         // 设置颜色空间为 CMYK 和 8 位深度
         image.colorSpace = ColorSpace.CMYK
         image.depth = 8
@@ -57,9 +53,9 @@ class ImageMagickConverter {
         // 使用 Zip 压缩下图片
         image.settings.compression = CompressionMethod.Zip
 
-        image.write(MagickFormat.Tiff, (newData) => {
+        image.write(MagickFormat.Tif, (newData) => {
           // 在这里可以获取转换后的图像数据
-          const blob = new Blob([newData], { type: 'image/tiff' })
+          const blob = new Blob([newData], { type: 'image/tif' })
           resolve(blob)
         })
       })
