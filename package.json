@@ -11,6 +11,7 @@
     "prepare": "simple-git-hooks"
   },
   "dependencies": {
+    "@aptabase/web": "^0.4.3",
     "@imagemagick/magick-wasm": "^0.0.32",
     "@radix-icons/vue": "^1.0.0",
     "@vee-validate/zod": "^4.15.0",
