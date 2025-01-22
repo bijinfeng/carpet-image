@@ -53,9 +53,9 @@ class ImageMagickConverter {
         // 使用 Zip 压缩下图片
         image.settings.compression = CompressionMethod.Zip
 
-        image.write(MagickFormat.Tif, (newData) => {
+        image.write(MagickFormat.Jpg, (newData) => {
           // 在这里可以获取转换后的图像数据
-          const blob = new Blob([newData], { type: 'image/tif' })
+          const blob = new Blob([newData], { type: 'image/jpg' })
           resolve(blob)
         })
       })

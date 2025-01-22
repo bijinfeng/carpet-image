@@ -41,7 +41,7 @@ async function exportToTiff() {
   const dataURL = stageRef.value!.getStage().toDataURL({ pixelRatio: 1 })
   const blob = await imageMagickConverter.rgbToCmyk(dataURL)
   const url = URL.createObjectURL(blob)
-  downloadURI(url, `${text.value}.tif`)
+  downloadURI(url, `${text.value}.jpg`)
   URL.revokeObjectURL(url)
 }
 
