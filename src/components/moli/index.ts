@@ -1,5 +1,5 @@
 import type { CarpetData } from '@/types'
-import moliUrl from '@/assets/moli/moli.jpg'
+import moliUrl from '@/assets/moli/moli.webp'
 import { h } from 'vue'
 import RenderCanvas from './render.vue'
 

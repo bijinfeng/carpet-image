@@ -3,6 +3,7 @@ import Tooltip from '@/components/tooltip.vue'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { downloadEvent } from '@/helper/aptabase'
 import { useLayoutStore } from '@/stores/layout'
 import { Download } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
@@ -24,6 +25,7 @@ const rendeKey = computed(() => {
 
 function handleDownload() {
   canvasRef.value?.exportToImage()
+  downloadEvent()
 }
 </script>
 

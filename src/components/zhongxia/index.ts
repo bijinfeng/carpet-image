@@ -1,5 +1,5 @@
 import type { CarpetData } from '@/types'
-import zhongxiaUrl from '@/assets/zhongxia/zhong-xia.jpg'
+import zhongxiaUrl from '@/assets/zhongxia/zhong-xia.webp'
 import { h } from 'vue'
 import RenderCanvas from './render.vue'
 
