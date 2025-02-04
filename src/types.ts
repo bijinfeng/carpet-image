@@ -1,4 +1,4 @@
-import type { VNode } from 'vue'
+// import type { VNode } from 'vue'
 
 export interface Size {
   width: number
@@ -27,5 +27,6 @@ export interface CarpetData {
   assetUrl: string
   defaultSize: Size
   step?: number
-  renderCanvas: (props: RenderProps) => VNode
+  render: (props: RenderProps, scope: paper.PaperScope) => void
+  // renderCanvas: (props: RenderProps) => VNode
 }

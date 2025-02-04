@@ -11,6 +11,7 @@ import { storeToRefs } from 'pinia'
 import { computed, useTemplateRef } from 'vue'
 import Container from './container.vue'
 import FormControl from './form.vue'
+import Paper from './paper.vue'
 import Render from './render.vue'
 import ScaleControl from './scale-control.vue'
 
@@ -46,9 +47,10 @@ function handleDownload() {
     <Separator />
     <div class="flex flex-1">
       <Container>
-        <Render ref="canvasRef" :key="rendeKey">
+        <!-- <Render ref="canvasRef" :key="rendeKey">
           <component :is="activeCarpet.renderCanvas(contextState)" />
-        </Render>
+        </Render> -->
+        <Paper />
       </Container>
       <Separator orientation="vertical" />
       <FormControl />

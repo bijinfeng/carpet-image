@@ -21,12 +21,10 @@
     "konva": "^9.3.18",
     "lodash-es": "^4.17.21",
     "lucide-vue-next": "^0.469.0",
+    "paper": "^0.12.18",
     "pinia": "^2.3.0",
     "radix-vue": "^1.9.11",
-    "tailwind-merge": "^2.6.0",
-    "tailwindcss-animate": "^1.0.7",
     "vee-validate": "^4.15.0",
-    "vite-svg-loader": "^5.1.0",
     "vue": "^3.5.13",
     "vue-konva": "^3.2.0",
     "zod": "^3.24.1"
@@ -44,10 +42,13 @@
     "less": "^4.2.1",
     "postcss": "^8.4.49",
     "simple-git-hooks": "^2.11.1",
+    "tailwind-merge": "^2.6.0",
     "tailwindcss": "^3.4.17",
+    "tailwindcss-animate": "^1.0.7",
     "typescript": "~5.6.2",
     "vite": "^6.0.5",
     "vite-plugin-static-copy": "^2.2.0",
+    "vite-svg-loader": "^5.1.0",
     "vue-tsc": "^2.2.0"
   },
   "simple-git-hooks": {

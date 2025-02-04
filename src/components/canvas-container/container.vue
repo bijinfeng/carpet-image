@@ -116,9 +116,7 @@ watch(
     @mouseleave="handleMouseUp"
   >
     <div class="cursor-pointer absolute" :style="{ left: `${state.offsetX}px`, top: `${state.offsetY}px` }">
-      <div :style="{ zoom: contextState.scale }">
-        <slot />
-      </div>
+      <slot />
     </div>
   </div>
 </template>

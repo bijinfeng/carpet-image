@@ -1,7 +1,8 @@
 import type { CarpetData } from '@/types'
 import moliUrl from '@/assets/moli/moli.webp'
-import { h } from 'vue'
-import RenderCanvas from './render.vue'
+// import { h } from 'vue'
+// import RenderCanvas from './render.vue'
+import { render } from './render'
 
 export const moli: CarpetData = {
   id: 1,
@@ -9,5 +10,6 @@ export const moli: CarpetData = {
   assetUrl: moliUrl,
   step: 0.1,
   defaultSize: { width: 6814, height: 1614 },
-  renderCanvas: props => h(RenderCanvas, props),
+  render,
+  // renderCanvas: props => h(RenderCanvas, props),
 }
