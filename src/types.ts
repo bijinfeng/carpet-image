@@ -1,5 +1,3 @@
-// import type { VNode } from 'vue'
-
 export interface Size {
   width: number
   height: number
@@ -21,12 +19,16 @@ export interface IContextState extends Size {
 
 export type RenderProps = IContextState
 
+export interface IRenderCarpet {
+  init: (props: RenderProps) => void
+  update: (props: RenderProps) => void
+}
+
 export interface CarpetData {
   id: number
   name: string
   assetUrl: string
   defaultSize: Size
   step?: number
-  render: (props: RenderProps, scope: paper.PaperScope) => void
-  // renderCanvas: (props: RenderProps) => VNode
+  render: (scope: paper.PaperScope) => IRenderCarpet
 }

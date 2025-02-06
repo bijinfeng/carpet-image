@@ -21,17 +21,20 @@ function createContextState(data: CarpetData): IContextState {
   }
 }
 
+
 export const useLayoutStore = defineStore('layout', () => {
-  const carpetList = ref<CarpetData[]>([moli, zhongxia])
-  const activeCarpetId = ref<number>(carpetList.value[0].id)
-  const activeCarpet = ref<CarpetData>(carpetList.value[0])
-  const contextState = reactive(createContextState(carpetList.value[0]))
+  const carpetList: CarpetData[] = [moli, zhongxia]
+
+  const activeCarpet = ref<CarpetData>(carpetList[0])
+  const contextState = reactive(createContextState(carpetList[0]))
 
   const switchCarpet = (item: CarpetData) => {
-    activeCarpetId.value = item.id
+    if (item.id === activeCarpet.value.id)
+      return
+
     activeCarpet.value = item
     Object.assign(contextState, createContextState(item))
   }
 
-  return { carpetList, activeCarpet, activeCarpetId, contextState, switchCarpet }
+  return { carpetList, activeCarpet, contextState, switchCarpet }
 })

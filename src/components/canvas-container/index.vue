@@ -5,27 +5,27 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { downloadEvent } from '@/helper/aptabase'
 import { useLayoutStore } from '@/stores/layout'
-import { Download } from 'lucide-vue-next'
+import { DownloadIcon, Loader2Icon } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
+import { useTemplateRef, ref } from 'vue'
 
-import { computed, useTemplateRef } from 'vue'
 import Container from './container.vue'
 import FormControl from './form.vue'
 import Paper from './paper.vue'
-import Render from './render.vue'
 import ScaleControl from './scale-control.vue'
+
+type PaperType = InstanceType<typeof Paper>
 
 const layoutStore = useLayoutStore()
 const { contextState, activeCarpet } = storeToRefs(layoutStore)
+const downloading = ref(false)
+const canvasRef = useTemplateRef<PaperType>('canvasRef')
 
-const canvasRef = useTemplateRef<{ exportToImage: () => void }>('canvasRef')
+async function handleDownload() {
+  downloading.value = true
+  await canvasRef.value?.exportToImage()
+  downloading.value = false
 
-const rendeKey = computed(() => {
-  return [contextState.value.width, contextState.value.height].concat(Object.values(contextState.value.radius)).join('_')
-})
-
-function handleDownload() {
-  canvasRef.value?.exportToImage()
   downloadEvent()
 }
 </script>
@@ -37,9 +37,9 @@ function handleDownload() {
       <div class="absolute flex items-center right-4 gap-2">
         <ScaleControl />
         <Tooltip content="下载">
-          <Button variant="ghost" size="icon" @click="handleDownload">
-            <Download class="size-4" />
-            <span class="sr-only">下载</span>
+          <Button :disabled="downloading" variant="ghost" size="icon" @click="handleDownload">
+            <Loader2Icon v-if="downloading" className="animate-spin" />
+            <DownloadIcon v-else class="size-4" />
           </Button>
         </Tooltip>
       </div>
@@ -47,10 +47,7 @@ function handleDownload() {
     <Separator />
     <div class="flex flex-1">
       <Container>
-        <!-- <Render ref="canvasRef" :key="rendeKey">
-          <component :is="activeCarpet.renderCanvas(contextState)" />
-        </Render> -->
-        <Paper />
+        <Paper ref="canvasRef" :key="activeCarpet.id" />
       </Container>
       <Separator orientation="vertical" />
       <FormControl />
