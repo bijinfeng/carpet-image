@@ -1,32 +1,33 @@
 <script setup lang="ts">
-import Tooltip from '@/components/tooltip.vue'
-import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
-import { downloadEvent } from '@/helper/aptabase'
-import { useLayoutStore } from '@/stores/layout'
-import { DownloadIcon, Loader2Icon } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
-import { useTemplateRef, ref } from 'vue'
+import Tooltip from '@/components/tooltip.vue';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { downloadEvent } from '@/helper/aptabase';
+import { useLayoutStore } from '@/stores/layout';
+import { DownloadIcon, Loader2Icon } from 'lucide-vue-next';
+import { storeToRefs } from 'pinia';
+import { ref, useTemplateRef } from 'vue';
 
-import Container from './container.vue'
-import FormControl from './form.vue'
-import Paper from './paper.vue'
-import ScaleControl from './scale-control.vue'
+import Container from './container.vue';
+import FormControl from './form.vue';
+import Paper from './paper.vue';
+import type PaperInstance from './paper.vue';
+import ScaleControl from './scale-control.vue';
 
-type PaperType = InstanceType<typeof Paper>
+type PaperType = InstanceType<typeof PaperInstance>;
 
-const layoutStore = useLayoutStore()
-const { contextState, activeCarpet } = storeToRefs(layoutStore)
-const downloading = ref(false)
-const canvasRef = useTemplateRef<PaperType>('canvasRef')
+const layoutStore = useLayoutStore();
+const { contextState, activeCarpet } = storeToRefs(layoutStore);
+const downloading = ref(false);
+const canvasRef = useTemplateRef<PaperType>('canvasRef');
 
 async function handleDownload() {
-  downloading.value = true
-  await canvasRef.value?.exportToImage()
-  downloading.value = false
+	downloading.value = true;
+	await canvasRef.value?.exportToImage();
+	downloading.value = false;
 
-  downloadEvent()
+	downloadEvent();
 }
 </script>
 
@@ -38,7 +39,7 @@ async function handleDownload() {
         <ScaleControl />
         <Tooltip content="下载">
           <Button :disabled="downloading" variant="ghost" size="icon" @click="handleDownload">
-            <Loader2Icon v-if="downloading" className="animate-spin" />
+            <Loader2Icon v-if="downloading" class="animate-spin" />
             <DownloadIcon v-else class="size-4" />
           </Button>
         </Tooltip>
