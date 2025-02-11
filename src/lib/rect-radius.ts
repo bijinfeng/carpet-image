@@ -100,4 +100,102 @@ export class RectRadius {
 
 		return { x: middleX, y: middleY };
 	}
+
+	// 修改矩形的圆角
+	public modifyRectRadius(rectWidth: number, rectHeight: number, radii: IRadius): IRadius {
+		const leftTop = radii.leftTop;
+		const rightTop = radii.rightTop;
+		const rightBottom = radii.rightBottom;
+		const leftBottom = radii.leftBottom;
+
+		let modifiedLeftTop = leftTop;
+		let modifiedRightTop = rightTop;
+		let modifiedRightBottom = rightBottom;
+		let modifiedLeftBottom = leftBottom;
+
+		// 计算 leftTop 是否需要约束
+		const modifyLeftTop = () =>
+			modifiedLeftTop + modifiedLeftBottom > rectHeight || modifiedLeftTop + modifiedRightTop > rectWidth;
+		// 计算 rightTop 是否需要约束
+		const modifyRightTop = () =>
+			modifiedRightTop + modifiedRightBottom > rectHeight || modifiedRightTop + modifiedLeftTop > rectWidth;
+		// 计算 rightBottom 是否需要约束
+		const modifyRightBottom = () =>
+			modifiedRightBottom + modifiedRightTop > rectHeight || modifiedRightBottom + modifiedLeftBottom > rectWidth;
+		// 计算 leftBottom 是否需要约束
+		const modifyLeftBottom = () =>
+			modifiedLeftBottom + modifiedRightBottom > rectWidth || modifiedLeftBottom + modifiedLeftTop > rectHeight;
+
+		// 找到需要约束的圆角:如果和超出边界,则需要约束
+		const needConstraint = {
+			leftTop: modifyLeftTop(),
+			rightTop: modifyRightTop(),
+			rightBottom: modifyRightBottom(),
+			leftBottom: modifyLeftBottom(),
+		};
+
+		// 逐步增加圆角
+		while (
+			needConstraint.leftTop ||
+			needConstraint.rightTop ||
+			needConstraint.rightBottom ||
+			needConstraint.leftBottom
+		) {
+			if (modifiedLeftTop + modifiedLeftBottom > rectHeight) {
+				if (modifiedLeftTop <= rectHeight / 2) {
+					modifiedLeftBottom = rectHeight - modifiedLeftTop;
+				} else if (modifiedLeftBottom <= rectHeight / 2) {
+					modifiedLeftTop = rectHeight - modifiedLeftBottom;
+				} else {
+					modifiedLeftTop = rectHeight / 2;
+					modifiedLeftBottom = rectHeight / 2;
+				}
+			}
+
+			if (modifiedLeftTop + modifiedRightTop > rectWidth) {
+				if (modifiedLeftTop <= rectWidth / 2) {
+					modifiedRightTop = rectWidth - modifiedLeftTop;
+				} else if (modifiedRightTop <= rectWidth / 2) {
+					modifiedLeftTop = rectWidth - modifiedRightTop;
+				} else {
+					modifiedLeftTop = rectWidth / 2;
+					modifiedRightTop = rectWidth / 2;
+				}
+			}
+
+			if (modifiedRightTop + modifiedRightBottom > rectHeight) {
+				if (modifiedRightTop <= rectHeight / 2) {
+					modifiedRightBottom = rectHeight - modifiedRightTop;
+				} else if (modifiedRightBottom <= rectHeight / 2) {
+					modifiedRightTop = rectHeight - modifiedRightBottom;
+				} else {
+					modifiedRightTop = rectHeight / 2;
+					modifiedRightBottom = rectHeight / 2;
+				}
+			}
+
+			if (modifiedRightTop + modifiedLeftTop > rectWidth) {
+				if (modifiedRightTop <= rectWidth / 2) {
+					modifiedLeftTop = rectWidth - modifiedRightTop;
+				} else if (modifiedLeftTop <= rectWidth / 2) {
+					modifiedRightTop = rectWidth - modifiedLeftTop;
+				} else {
+					modifiedRightTop = rectWidth / 2;
+					modifiedLeftTop = rectWidth / 2;
+				}
+			}
+
+			needConstraint.leftTop = modifyLeftTop();
+			needConstraint.rightTop = modifyRightTop();
+			needConstraint.rightBottom = modifyRightBottom();
+			needConstraint.leftBottom = modifyLeftBottom();
+		}
+
+		return {
+			leftTop: modifiedLeftTop,
+			rightTop: modifiedRightTop,
+			rightBottom: modifiedRightBottom,
+			leftBottom: modifiedLeftBottom,
+		};
+	}
 }

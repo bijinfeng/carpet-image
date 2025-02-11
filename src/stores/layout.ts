@@ -1,5 +1,4 @@
-import { moli } from '@/render/moli';
-import { zhongxia } from '@/render/zhongxia';
+import { carpetList } from '@/render';
 import type { CarpetData, IContextState } from '@/types';
 
 import { defineStore } from 'pinia';
@@ -22,8 +21,6 @@ function createContextState(data: CarpetData): IContextState {
 }
 
 export const useLayoutStore = defineStore('layout', () => {
-	const carpetList: CarpetData[] = [moli, zhongxia];
-
 	const activeCarpet = ref<CarpetData>(carpetList[0]);
 	const contextState = reactive(createContextState(carpetList[0]));
 

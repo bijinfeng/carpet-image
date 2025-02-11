@@ -3,11 +3,12 @@ import rtFlower from '@/assets/zhongxia/rthua.png';
 import textImage from '@/assets/zhongxia/zhongxia-text.png';
 import { useImageScale } from '@/hooks';
 import { RectRadius } from '@/lib/rect-radius';
-import type { IRenderCarpet, RenderProps } from '@/types';
+import type { IRadius, IRenderCarpet, RenderProps } from '@/types';
 
 const BLOCK_SIZE = 39;
 const BLOCK_PADDING = 10;
 const RECT_SIZE = 60;
+const RECT_PADDING = BLOCK_SIZE * 1.5 + BLOCK_PADDING;
 
 // 文字图片
 const IMAGE_WIDTH = 765;
@@ -44,6 +45,8 @@ class Render extends RectRadius implements IRenderCarpet {
 	private wheatearItem: paper.Item;
 
 	private imageScale = 1;
+	private radii!: IRadius; // 调整每个圆角的大小,确保其值不会过大,导致圆角重叠或超出矩形边界
+
 	private cutPoints: CutPoint[] = [];
 	private layer1: paper.Layer;
 	private layer2: paper.Layer;
@@ -67,6 +70,11 @@ class Render extends RectRadius implements IRenderCarpet {
 		});
 	}
 
+	private _watchProps(props: RenderProps) {
+		this.imageScale = useImageScale(props).value;
+		this.radii = this.modifyRectRadius(props.width, props.height, props.radius);
+	}
+
 	private _createRect(props: RenderProps) {
 		this.insidePath?.remove();
 		this.outsidePath?.remove();
@@ -80,12 +88,12 @@ class Render extends RectRadius implements IRenderCarpet {
 			RECT_SIZE,
 			props.width - RECT_SIZE * 2,
 			props.height - RECT_SIZE * 2,
-			this.changeRadius(props.radius, RECT_SIZE),
+			this.changeRadius(this.radii, RECT_SIZE),
 		);
 		this.insidePath.fillColor = new this.scope.Color('white');
 		this.layer1.addChild(this.insidePath);
 
-		this.outsidePath = this.drawRectRadius(0, 0, props.width, props.height, props.radius).subtract(this.insidePath);
+		this.outsidePath = this.drawRectRadius(0, 0, props.width, props.height, this.radii).subtract(this.insidePath);
 		this.outsidePath.fillColor = new this.scope.Color('black');
 		this.layer2.addChild(this.outsidePath);
 
@@ -150,9 +158,9 @@ class Render extends RectRadius implements IRenderCarpet {
 		const imageHeight = IMAGE_LBFLOWER_HEIGHT * this.imageScale;
 		const size = new this.scope.Size(imageWidth, imageHeight);
 
-		const arcStartPoint = new this.scope.Point(0, props.height - props.radius.leftBottom);
-		const arcEndPoint = new this.scope.Point(props.radius.leftBottom, props.height);
-		const arcCenterPoint = new this.scope.Point(props.radius.leftBottom, props.height - props.radius.leftBottom);
+		const arcStartPoint = new this.scope.Point(0, props.height - this.radii.leftBottom);
+		const arcEndPoint = new this.scope.Point(this.radii.leftBottom, props.height);
+		const arcCenterPoint = new this.scope.Point(this.radii.leftBottom, props.height - this.radii.leftBottom);
 		const middlePoint = this.calculateArcCenter(arcStartPoint, arcEndPoint, arcCenterPoint);
 		const position = new this.scope.Point(-14 + imageWidth / 2 + middlePoint.x, middlePoint.y - imageHeight / 2);
 
@@ -172,9 +180,9 @@ class Render extends RectRadius implements IRenderCarpet {
 		const imageHeight = IMAGE_RTFLOWER_HEIGHT * this.imageScale;
 		const size = new this.scope.Size(imageWidth, imageHeight);
 
-		const arcStartPoint = new this.scope.Point(props.width - props.radius.rightTop, 0);
-		const arcEndPoint = new this.scope.Point(props.width, props.radius.rightTop);
-		const arcCenterPoint = new this.scope.Point(props.width - props.radius.rightTop, props.radius.rightTop);
+		const arcStartPoint = new this.scope.Point(props.width - this.radii.rightTop, 0);
+		const arcEndPoint = new this.scope.Point(props.width, this.radii.rightTop);
+		const arcCenterPoint = new this.scope.Point(props.width - this.radii.rightTop, this.radii.rightTop);
 		const middlePoint = this.calculateArcCenter(arcStartPoint, arcEndPoint, arcCenterPoint);
 
 		const position = new this.scope.Point(middlePoint.x - imageWidth / 2, 21 + imageHeight / 2 + middlePoint.y);
@@ -191,7 +199,8 @@ class Render extends RectRadius implements IRenderCarpet {
 	}
 
 	init(props: RenderProps) {
-		this.imageScale = useImageScale(props).value;
+		this._watchProps(props);
+
 		this._createRect(props);
 		this._createCenterText(props);
 		this._createLBFlower(props);
@@ -199,7 +208,8 @@ class Render extends RectRadius implements IRenderCarpet {
 	}
 
 	update(props: RenderProps) {
-		this.imageScale = useImageScale(props).value;
+		this._watchProps(props);
+
 		this._createRect(props);
 		this._createCenterText(props);
 		this._createLBFlower(props);

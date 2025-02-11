@@ -1,57 +1,55 @@
 {
-  "name": "carpet",
-  "type": "module",
-  "version": "1.0.0",
-  "private": true,
-  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf",
-  "scripts": {
-    "dev": "rsbuild dev",
-    "build": "rsbuild build",
-    "preview": "rsbuild preview",
-    "prepare": "simple-git-hooks",
-    "format": "biome format --write"
-  },
-  "dependencies": {
-    "@aptabase/web": "^0.4.3",
-    "@imagemagick/magick-wasm": "^0.0.32",
-    "@radix-icons/vue": "^1.0.0",
-    "@vee-validate/zod": "^4.15.0",
-    "@vueuse/core": "^12.2.0",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "konva": "^9.3.18",
-    "lodash-es": "^4.17.21",
-    "lucide-vue-next": "^0.469.0",
-    "paper": "^0.12.18",
-    "pinia": "^2.3.0",
-    "radix-vue": "^1.9.11",
-    "vee-validate": "^4.15.0",
-    "vue": "^3.5.13",
-    "vue-konva": "^3.2.0",
-    "zod": "^3.24.1"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
-    "@rsbuild/core": "^1.2.4",
-    "@rsbuild/plugin-less": "^1.1.0",
-    "@rsbuild/plugin-vue": "^1.0.5",
-    "@types/lodash-es": "^4.17.12",
-    "@types/node": "^22.10.2",
-    "autoprefixer": "^10.4.20",
-    "cross-env": "^7.0.3",
-    "rsbuild-plugin-svg": "^0.0.2",
-    "simple-git-hooks": "^2.11.1",
-    "tailwind-merge": "^2.6.0",
-    "tailwindcss": "^3.4.17",
-    "tailwindcss-animate": "^1.0.7",
-    "typescript": "~5.6.2"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "npx lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,vue}": [
-      "biome check --write --no-errors-on-unmatched"
-    ]
-  }
+	"name": "carpet",
+	"type": "module",
+	"version": "2.0.0",
+	"private": true,
+	"packageManager": "pnpm@9.13.2",
+	"scripts": {
+		"dev": "rsbuild dev",
+		"build": "rsbuild build",
+		"preview": "rsbuild preview",
+		"prepare": "simple-git-hooks",
+		"format": "biome format --write"
+	},
+	"dependencies": {
+		"@aptabase/web": "^0.4.3",
+		"@imagemagick/magick-wasm": "^0.0.32",
+		"@radix-icons/vue": "^1.0.0",
+		"@vee-validate/zod": "^4.15.0",
+		"@vueuse/core": "^12.2.0",
+		"class-variance-authority": "^0.7.1",
+		"clsx": "^2.1.1",
+		"konva": "^9.3.18",
+		"lodash-es": "^4.17.21",
+		"lucide-vue-next": "^0.469.0",
+		"paper": "^0.12.18",
+		"pinia": "^2.3.0",
+		"radix-vue": "^1.9.11",
+		"vee-validate": "^4.15.0",
+		"vue": "^3.5.13",
+		"vue-konva": "^3.2.0",
+		"zod": "^3.24.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@rsbuild/core": "^1.2.4",
+		"@rsbuild/plugin-less": "^1.1.0",
+		"@rsbuild/plugin-vue": "^1.0.5",
+		"@types/lodash-es": "^4.17.12",
+		"@types/node": "^22.10.2",
+		"autoprefixer": "^10.4.20",
+		"cross-env": "^7.0.3",
+		"rsbuild-plugin-svg": "^0.0.2",
+		"simple-git-hooks": "^2.11.1",
+		"tailwind-merge": "^2.6.0",
+		"tailwindcss": "^3.4.17",
+		"tailwindcss-animate": "^1.0.7",
+		"typescript": "~5.6.2"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "npx lint-staged"
+	},
+	"lint-staged": {
+		"*.{js,ts,cjs,mjs,d.cts,d.mts,jsx,tsx,json,jsonc,vue}": ["biome check --write --no-errors-on-unmatched"]
+	}
 }
