@@ -6,60 +6,56 @@ export interface CutPoint {
 }
 
 export class RectRadius {
-	private rectScope: paper.PaperScope;
-
-	constructor(scope: paper.PaperScope) {
-		this.rectScope = scope;
-	}
+	constructor(public scope: paper.PaperScope) {}
 
 	// 绘制圆角矩形
 	public drawRectRadius(rectX: number, rectY: number, rectWidth: number, rectHeight: number, radii: IRadius) {
-		const path = new this.rectScope.Path();
+		const path = new this.scope.Path();
 
 		// 计算圆角圆弧的控制点，使用建议的贝塞尔控制点比率
 		const kappa = 0.552284749831;
 
 		// 起始点（左上角）
-		path.moveTo(new this.rectScope.Point(rectX + radii.leftTop, rectY));
+		path.moveTo(new this.scope.Point(rectX + radii.leftTop, rectY));
 
 		// 顶边，连接到右上角
-		path.lineTo(new this.rectScope.Point(rectX + rectWidth - radii.rightTop, rectY));
+		path.lineTo(new this.scope.Point(rectX + rectWidth - radii.rightTop, rectY));
 
 		// 右上角弧线
 		path.cubicCurveTo(
-			new this.rectScope.Point(rectX + rectWidth - (1 - kappa) * radii.rightTop, rectY), // 控制点1
-			new this.rectScope.Point(rectX + rectWidth, rectY + (1 - kappa) * radii.rightTop), // 控制点2
-			new this.rectScope.Point(rectX + rectWidth, rectY + radii.rightTop), // 终点
+			new this.scope.Point(rectX + rectWidth - (1 - kappa) * radii.rightTop, rectY), // 控制点1
+			new this.scope.Point(rectX + rectWidth, rectY + (1 - kappa) * radii.rightTop), // 控制点2
+			new this.scope.Point(rectX + rectWidth, rectY + radii.rightTop), // 终点
 		);
 
 		// 右边，连接到右下角
-		path.lineTo(new this.rectScope.Point(rectX + rectWidth, rectY + rectHeight - radii.rightBottom));
+		path.lineTo(new this.scope.Point(rectX + rectWidth, rectY + rectHeight - radii.rightBottom));
 
 		// 右下角弧线
 		path.cubicCurveTo(
-			new this.rectScope.Point(rectX + rectWidth, rectY + rectHeight - (1 - kappa) * radii.rightBottom),
-			new this.rectScope.Point(rectX + rectWidth - (1 - kappa) * radii.rightBottom, rectY + rectHeight),
-			new this.rectScope.Point(rectX + rectWidth - radii.rightBottom, rectY + rectHeight),
+			new this.scope.Point(rectX + rectWidth, rectY + rectHeight - (1 - kappa) * radii.rightBottom),
+			new this.scope.Point(rectX + rectWidth - (1 - kappa) * radii.rightBottom, rectY + rectHeight),
+			new this.scope.Point(rectX + rectWidth - radii.rightBottom, rectY + rectHeight),
 		);
 
 		// 底边，连接到左下角
-		path.lineTo(new this.rectScope.Point(rectX + radii.leftBottom, rectY + rectHeight));
+		path.lineTo(new this.scope.Point(rectX + radii.leftBottom, rectY + rectHeight));
 
 		// 左下角弧线
 		path.cubicCurveTo(
-			new this.rectScope.Point(rectX + (1 - kappa) * radii.leftBottom, rectY + rectHeight),
-			new this.rectScope.Point(rectX, rectY + rectHeight - (1 - kappa) * radii.leftBottom),
-			new this.rectScope.Point(rectX, rectY + rectHeight - radii.leftBottom),
+			new this.scope.Point(rectX + (1 - kappa) * radii.leftBottom, rectY + rectHeight),
+			new this.scope.Point(rectX, rectY + rectHeight - (1 - kappa) * radii.leftBottom),
+			new this.scope.Point(rectX, rectY + rectHeight - radii.leftBottom),
 		);
 
 		// 左边，连接到左上角
-		path.lineTo(new this.rectScope.Point(rectX, rectY + radii.leftTop));
+		path.lineTo(new this.scope.Point(rectX, rectY + radii.leftTop));
 
 		// 左上角弧线
 		path.cubicCurveTo(
-			new this.rectScope.Point(rectX, rectY + (1 - kappa) * radii.leftTop),
-			new this.rectScope.Point(rectX + (1 - kappa) * radii.leftTop, rectY),
-			new this.rectScope.Point(rectX + radii.leftTop, rectY),
+			new this.scope.Point(rectX, rectY + (1 - kappa) * radii.leftTop),
+			new this.scope.Point(rectX + (1 - kappa) * radii.leftTop, rectY),
+			new this.scope.Point(rectX + radii.leftTop, rectY),
 		);
 
 		// 完成路径闭合
@@ -230,7 +226,7 @@ export class RectRadius {
 		radii: IRadius,
 		offset: number,
 	): paper.Path {
-		const path = new this.rectScope.Path();
+		const path = new this.scope.Path();
 
 		if (radii.leftTop) {
 			// 左上角

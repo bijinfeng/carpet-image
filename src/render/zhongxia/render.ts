@@ -54,7 +54,7 @@ class Render extends RectRadius implements IRenderCarpet {
 	private insidePath: paper.Path | null = null;
 	private outsidePath: paper.PathItem | null = null;
 
-	constructor(private scope: paper.PaperScope) {
+	constructor(scope: paper.PaperScope) {
 		super(scope);
 
 		// 创建两个图层，第一个图层负责渲染背景色和花朵图案，第二个图层负责渲染描边，麦穗和中文的文字

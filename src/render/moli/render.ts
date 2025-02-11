@@ -19,7 +19,8 @@ class Render extends RectRadius implements IRenderCarpet {
 	private radii!: IRadius; // 调整每个圆角的大小,确保其值不会过大,导致圆角重叠或超出矩形边界
 	private blockSize = BLOCK_SIZE;
 
-	constructor(private scope: paper.PaperScope) {
+	// biome-ignore lint/complexity/noUselessConstructor: <explanation>
+	constructor(scope: paper.PaperScope) {
 		super(scope);
 	}
 
