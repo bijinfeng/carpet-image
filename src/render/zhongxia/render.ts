@@ -1,8 +1,8 @@
 import lbFlower from '@/assets/zhongxia/lbhua.png';
 import rtFlower from '@/assets/zhongxia/rthua.png';
 import textImage from '@/assets/zhongxia/zhongxia-text.png';
-import { useImageScale } from '@/hooks';
 import { RectRadius } from '@/lib/rect-radius';
+import { calculateImageScale } from '@/lib/utils';
 import type { IRadius, IRenderCarpet, RenderProps } from '@/types';
 
 const BLOCK_SIZE = 39;
@@ -74,7 +74,7 @@ class Render extends RectRadius implements IRenderCarpet {
 	private _watchProps(props: RenderProps) {
 		if (this.rectOffsetPath) this.rectOffsetPath.remove();
 
-		this.imageScale = useImageScale(props).value;
+		this.imageScale = calculateImageScale(props.height);
 		this.radii = this.modifyRectRadius(props.width, props.height, props.radius);
 		this.rectOffsetPath = this.getRectOffsetPath(
 			RECT_SIZE,

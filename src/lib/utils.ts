@@ -1,3 +1,4 @@
+import { CM_TO_PX } from '@/constants';
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -64,4 +65,12 @@ export function calculateOptimalSquareSize(params: CalculateOptimalSquareSizePar
 	}
 
 	return optimalSize;
+}
+
+export function calculateImageScale(_height: number) {
+	// 画布的宽大于 30cm 时，每超过 20 cm，图片就会变大 1.2 倍
+	const height = _height / CM_TO_PX;
+	if (height <= 30) return 1;
+
+	return 1 + Math.ceil((height - 30) / 20) * 0.2;
 }
