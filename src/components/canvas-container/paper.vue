@@ -44,7 +44,7 @@ function initPaper() {
 	text.position.y -= bounds.height / 2;
 
 	contentRender = activeCarpet.value.render(scope);
-	contentRender.init(contextState.value);
+	contentRender.render(contextState.value);
 }
 
 function updatePaper() {
@@ -56,7 +56,7 @@ function updatePaper() {
 	rectangle.set({ size: [TEXT_LINE_HEIGHT, contextState.value.height] });
 	text.content = remarkText.value;
 
-	contentRender?.update(contextState.value);
+	contentRender?.render(contextState.value);
 }
 
 onMounted(() => {

@@ -198,4 +198,79 @@ export class RectRadius {
 			leftBottom: modifiedLeftBottom,
 		};
 	}
+
+	// 按固定宽度切割路径
+	public splitPath(path: paper.Path, cutWidth: number) {
+		const cutPoints: CutPoint[] = [];
+
+		// 计算总周长
+		const totalLength = path.length;
+
+		// 沿路径按固定宽度采样
+		for (let offset = 0; offset < totalLength; offset += cutWidth) {
+			// 获取当前切割点的位置和切线方向
+			const point = path.getPointAt(offset);
+			const tangent = path.getTangentAt(offset);
+
+			cutPoints.push({
+				position: point,
+				angle: tangent.angle, // 计算旋转角度（切线方向转换为角度）
+			});
+		}
+
+		return cutPoints;
+	}
+
+	// 获取可绘制路径
+	public getRectOffsetPath(
+		rectX: number,
+		rectY: number,
+		rectWidth: number,
+		rectHeight: number,
+		radii: IRadius,
+		offset: number,
+	): paper.Path {
+		const path = new this.rectScope.Path();
+
+		if (radii.leftTop) {
+			// 左上角
+			path.moveTo([rectX, rectY]);
+		} else {
+			path.moveTo([rectX, rectY + offset]);
+			path.lineTo([rectX + offset, rectY + offset]);
+			path.lineTo([rectX + offset, rectY]);
+		}
+
+		if (radii.rightTop) {
+			// 右上角
+			path.lineTo([rectX + rectWidth, rectY]);
+		} else {
+			path.lineTo([rectX + rectWidth - offset, rectY]);
+			path.lineTo([rectX + rectWidth - offset, rectY + offset]);
+			path.lineTo([rectX + rectWidth, rectY + offset]);
+		}
+
+		if (radii.rightBottom) {
+			// 右下角
+			path.lineTo([rectX + rectWidth, rectY + rectHeight]);
+		} else {
+			path.lineTo([rectX + rectWidth, rectY + rectHeight - offset]);
+			path.lineTo([rectX + rectWidth - offset, rectY + rectHeight - offset]);
+			path.lineTo([rectX + rectWidth - offset, rectY + rectHeight]);
+		}
+
+		if (radii.leftBottom) {
+			// 左下角
+			path.lineTo([rectX, rectY + rectHeight]);
+		} else {
+			path.lineTo([rectX + offset, rectY + rectHeight]);
+			path.lineTo([rectX + offset, rectY + rectHeight - offset]);
+			path.lineTo([rectX, rectY + rectHeight - offset]);
+		}
+
+		// 完成路径闭合
+		path.closePath();
+
+		return path;
+	}
 }

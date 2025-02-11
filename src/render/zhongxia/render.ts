@@ -39,13 +39,14 @@ interface CutPoint {
 }
 
 class Render extends RectRadius implements IRenderCarpet {
-	private centerText: paper.Raster | null = null;
-	private lbFlower: paper.Raster | null = null;
-	private rtFlower: paper.Raster | null = null;
-	private wheatearItem: paper.Item;
+	private centerText: paper.Raster | null = null; // 中间文字
+	private lbFlower: paper.Raster | null = null; // 左下角花朵
+	private rtFlower: paper.Raster | null = null; // 右上角花朵
+	private wheatearItem: paper.Item; // 麦穗
 
-	private imageScale = 1;
+	private imageScale = 1; // 图片缩放比例
 	private radii!: IRadius; // 调整每个圆角的大小,确保其值不会过大,导致圆角重叠或超出矩形边界
+	private rectOffsetPath: paper.Path | null = null; // 麦穗的边界
 
 	private cutPoints: CutPoint[] = [];
 	private layer1: paper.Layer;
@@ -71,8 +72,19 @@ class Render extends RectRadius implements IRenderCarpet {
 	}
 
 	private _watchProps(props: RenderProps) {
+		if (this.rectOffsetPath) this.rectOffsetPath.remove();
+
 		this.imageScale = useImageScale(props).value;
 		this.radii = this.modifyRectRadius(props.width, props.height, props.radius);
+		this.rectOffsetPath = this.getRectOffsetPath(
+			RECT_SIZE,
+			RECT_SIZE,
+			props.width - RECT_SIZE * 2,
+			props.height - RECT_SIZE * 2,
+			this.changeRadius(this.radii, RECT_SIZE),
+			RECT_PADDING,
+		);
+		this.layer2.addChild(this.rectOffsetPath);
 	}
 
 	private _createRect(props: RenderProps) {
@@ -97,41 +109,21 @@ class Render extends RectRadius implements IRenderCarpet {
 		this.outsidePath.fillColor = new this.scope.Color('black');
 		this.layer2.addChild(this.outsidePath);
 
-		this.cutPoints = this._splitPath(cutWidth);
+		this.cutPoints = this.splitPath(this.insidePath, cutWidth);
 
 		this._drawCutPoints();
-	}
-
-	private _splitPath(cutWidth: number) {
-		if (!this.insidePath) return [];
-
-		const cutPoints: CutPoint[] = [];
-
-		// 计算总周长
-		const totalLength = this.insidePath.length;
-
-		// 沿路径按固定宽度采样
-		for (let offset = 0; offset < totalLength; offset += cutWidth) {
-			// 获取当前切割点的位置和切线方向
-			const point = this.insidePath.getPointAt(offset);
-			const tangent = this.insidePath.getTangentAt(offset);
-
-			cutPoints.push({
-				position: point,
-				angle: tangent.angle, // 计算旋转角度（切线方向转换为角度）
-			});
-		}
-
-		return cutPoints;
 	}
 
 	// 绘制切割点和旋转方向
 	private _drawCutPoints() {
 		for (const point of this.cutPoints) {
+			const isOffset = !this.rectOffsetPath || this.rectOffsetPath.contains(point.position);
+
 			const imgRaster = this.wheatearItem.clone();
+
 			imgRaster.position = point.position;
 			imgRaster.rotate(point.angle);
-			imgRaster.visible = true;
+			imgRaster.visible = isOffset;
 
 			this.layer2.addChild(imgRaster);
 
@@ -198,16 +190,7 @@ class Render extends RectRadius implements IRenderCarpet {
 		this.rtFlower.bringToFront();
 	}
 
-	init(props: RenderProps) {
-		this._watchProps(props);
-
-		this._createRect(props);
-		this._createCenterText(props);
-		this._createLBFlower(props);
-		this._createRTFlower(props);
-	}
-
-	update(props: RenderProps) {
+	render(props: RenderProps) {
 		this._watchProps(props);
 
 		this._createRect(props);

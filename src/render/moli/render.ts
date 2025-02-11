@@ -8,7 +8,7 @@ class Render implements IRenderCarpet {
 
 	constructor(private scope: paper.PaperScope) {}
 
-	init(props: RenderProps) {
+	render(props: RenderProps) {
 		// 创建带不同圆角的矩形路径
 		this.rect = new this.scope.Path.Rectangle({
 			point: [BLOCK_PADDING / 2, BLOCK_PADDING / 2],
