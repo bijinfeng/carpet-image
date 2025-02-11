@@ -31,5 +31,5 @@ export const useLayoutStore = defineStore('layout', () => {
 		Object.assign(contextState, createContextState(item));
 	};
 
-	return { carpetList, activeCarpet, contextState, switchCarpet };
+	return { activeCarpet, contextState, switchCarpet };
 });

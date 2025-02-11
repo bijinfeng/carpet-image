@@ -6,8 +6,8 @@ import type { IRadius, IRenderCarpet, RenderProps } from '@/types';
 
 const IMAGE_WIDTH = 1511;
 const IMAGE_HEIGHT = 123;
-const BLOCK_SIZE = 60;
-const BLOCK_PADDING = 30;
+const BLOCK_SIZE = CM_TO_PX * 2;
+const BLOCK_PADDING = CM_TO_PX;
 
 class Render extends RectRadius implements IRenderCarpet {
 	private centerText: paper.Raster | null = null; // 中间文字
@@ -26,13 +26,13 @@ class Render extends RectRadius implements IRenderCarpet {
 	private _watchProps(props: RenderProps) {
 		this.imageScale = calculateImageScale(props.height);
 		this.radii = this.modifyRectRadius(props.width, props.height, props.radius);
-		this.blockSize = calculateOptimalSquareSize({
-			x: props.width - BLOCK_PADDING * 2,
-			y: props.height - BLOCK_PADDING * 2,
-			defaultSize: BLOCK_SIZE,
-			tolerance: 0.2 * CM_TO_PX,
-			evenOdd: 'odd',
-		});
+		// this.blockSize = calculateOptimalSquareSize({
+		// 	x: props.width - BLOCK_PADDING * 2,
+		// 	y: props.height - BLOCK_PADDING * 2,
+		// 	defaultSize: BLOCK_SIZE,
+		// 	tolerance: 0.2 * CM_TO_PX,
+		// 	evenOdd: 'even',
+		// });
 	}
 
 	private _createCenterText(props: RenderProps) {
@@ -78,6 +78,7 @@ class Render extends RectRadius implements IRenderCarpet {
 		this.insidePath.strokeWidth = this.blockSize;
 		this.insidePath.strokeColor = new this.scope.Color('black');
 		this.insidePath.dashArray = [this.blockSize, this.blockSize];
+		this.insidePath.dashOffset = this.blockSize / 2;
 	}
 
 	private _createOutsidePath(props: RenderProps) {
@@ -91,6 +92,7 @@ class Render extends RectRadius implements IRenderCarpet {
 		this.outsidePath.strokeWidth = this.blockSize;
 		this.outsidePath.strokeColor = new this.scope.Color('black');
 		this.outsidePath.dashArray = [this.blockSize, this.blockSize];
+		this.outsidePath.dashOffset = this.blockSize / 2;
 	}
 
 	render(props: RenderProps) {

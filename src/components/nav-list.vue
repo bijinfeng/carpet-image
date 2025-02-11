@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import LogoIcon from '@/assets/logo.svg?component'
-import { Card } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
-import { useLayoutStore } from '@/stores/layout'
+import LogoIcon from '@/assets/logo.svg?component';
+import { Card } from '@/components/ui/card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
+import { carpetList } from '@/render';
+import { useLayoutStore } from '@/stores/layout';
 
-const layoutStore = useLayoutStore()
+const layoutStore = useLayoutStore();
 </script>
 
 <template>
@@ -19,7 +20,7 @@ const layoutStore = useLayoutStore()
     <Separator />
     <ScrollArea class="p-2 flex-1">
       <Card
-        v-for="item in layoutStore.carpetList"
+        v-for="item in carpetList"
         :key="item.id"
         class="p-3 cursor-pointer mb-2"
         @click="() => layoutStore.switchCarpet(item)"
