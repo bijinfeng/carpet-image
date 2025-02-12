@@ -195,6 +195,17 @@ export class RectRadius {
 		};
 	}
 
+	public calculateBlockPadding(path: paper.Path, blockSize: number, blockPadding: number) {
+		// 计算总周长
+		const totalLength = path.length;
+		// 计算切割次数(向下取整)
+		const cutCount = Math.floor(totalLength / (blockSize + blockPadding));
+		//  实际间隔
+		const actualBlockPadding = (totalLength - cutCount * blockSize) / cutCount;
+
+		return actualBlockPadding;
+	}
+
 	// 按固定宽度切割路径
 	public splitPath(path: paper.Path, cutWidth: number) {
 		const cutPoints: CutPoint[] = [];

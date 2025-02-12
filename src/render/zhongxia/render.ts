@@ -8,7 +8,6 @@ import type { IRadius, IRenderCarpet, RenderProps } from '@/types';
 const BLOCK_SIZE = 39;
 const BLOCK_PADDING = 10;
 const RECT_SIZE = 60;
-const RECT_PADDING = BLOCK_SIZE * 1.5 + BLOCK_PADDING;
 
 // 文字图片
 const IMAGE_WIDTH = 765;
@@ -20,8 +19,7 @@ const IMAGE_RTFLOWER_HEIGHT = 339;
 const IMAGE_LBFLOWER_WIDTH = 542;
 const IMAGE_LBFLOWER_HEIGHT = 437;
 
-const cutWidth = BLOCK_SIZE + BLOCK_PADDING;
-
+// 麦穗
 const wheatearData = `
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="39.11962890625" height="78.45852661132812" viewBox="0 0 39.11962890625 78.45852661132812" fill="none">
   <path d="M39.1197 78.4585C17.5149 78.4585 0.000976562 60.8953 0.000976562 39.2298C21.6057 39.2298 39.1197 56.793 39.1197 78.4585Z" fill="#000000">
@@ -47,6 +45,7 @@ class Render extends RectRadius implements IRenderCarpet {
 	private imageScale = 1; // 图片缩放比例
 	private radii!: IRadius; // 调整每个圆角的大小,确保其值不会过大,导致圆角重叠或超出矩形边界
 	private rectOffsetPath: paper.Path | null = null; // 麦穗的边界
+	private blockPadding = BLOCK_PADDING; // 麦穗之间的间隔
 
 	private cutPoints: CutPoint[] = [];
 	private layer1: paper.Layer;
@@ -72,29 +71,20 @@ class Render extends RectRadius implements IRenderCarpet {
 	}
 
 	private _watchProps(props: RenderProps) {
-		if (this.rectOffsetPath) this.rectOffsetPath.remove();
-
 		this.imageScale = calculateImageScale(props.height);
 		this.radii = this.modifyRectRadius(props.width, props.height, props.radius);
-		this.rectOffsetPath = this.getRectOffsetPath(
-			RECT_SIZE,
-			RECT_SIZE,
-			props.width - RECT_SIZE * 2,
-			props.height - RECT_SIZE * 2,
-			this.changeRadius(this.radii, RECT_SIZE),
-			RECT_PADDING,
-		);
-		this.layer2.addChild(this.rectOffsetPath);
 	}
 
 	private _createRect(props: RenderProps) {
 		this.insidePath?.remove();
 		this.outsidePath?.remove();
+		this.rectOffsetPath?.remove();
 
 		for (const { svgItem } of this.cutPoints) {
 			svgItem?.remove();
 		}
 
+		// 绘制白色的背景色
 		this.insidePath = this.drawRectRadius(
 			RECT_SIZE,
 			RECT_SIZE,
@@ -105,16 +95,30 @@ class Render extends RectRadius implements IRenderCarpet {
 		this.insidePath.fillColor = new this.scope.Color('white');
 		this.layer1.addChild(this.insidePath);
 
+		// 绘制黑色的边框
 		this.outsidePath = this.drawRectRadius(0, 0, props.width, props.height, this.radii).subtract(this.insidePath);
 		this.outsidePath.fillColor = new this.scope.Color('black');
 		this.layer2.addChild(this.outsidePath);
 
-		this.cutPoints = this.splitPath(this.insidePath, cutWidth);
+		// 由于矩形的宽高不固定，需要修正麦穗的间隔使得麦穗的大小固定
+		this.blockPadding = this.calculateBlockPadding(this.insidePath, BLOCK_SIZE, BLOCK_PADDING);
+		this.cutPoints = this.splitPath(this.insidePath, BLOCK_SIZE + this.blockPadding);
+
+		// 没有圆角的角落需要有一定的空白间隔，绘制麦穗可落点的空间
+		this.rectOffsetPath = this.getRectOffsetPath(
+			RECT_SIZE,
+			RECT_SIZE,
+			props.width - RECT_SIZE * 2,
+			props.height - RECT_SIZE * 2,
+			this.changeRadius(this.radii, RECT_SIZE),
+			BLOCK_SIZE * 1.5 + this.blockPadding,
+		);
+		this.layer2.addChild(this.rectOffsetPath);
 
 		this._drawCutPoints();
 	}
 
-	// 绘制切割点和旋转方向
+	// 绘制麦穗
 	private _drawCutPoints() {
 		for (const point of this.cutPoints) {
 			const isOffset = !this.rectOffsetPath || this.rectOffsetPath.contains(point.position);
