@@ -1,7 +1,7 @@
 import textImage from '@/assets/moli/moli-text.jpg';
 import { CM_TO_PX } from '@/constants';
 import { RectRadius } from '@/lib/rect-radius';
-import { calculateImageScale, calculateOptimalSquareSize } from '@/lib/utils';
+import { calculateImageScale } from '@/lib/utils';
 import type { IRadius, IRenderCarpet, RenderProps } from '@/types';
 
 const IMAGE_WIDTH = 1511;
@@ -18,6 +18,7 @@ class Render extends RectRadius implements IRenderCarpet {
 	private imageScale = 1; // 图片缩放比例
 	private radii!: IRadius; // 调整每个圆角的大小,确保其值不会过大,导致圆角重叠或超出矩形边界
 	private blockSize = BLOCK_SIZE;
+	private blockPadding = BLOCK_PADDING;
 
 	// biome-ignore lint/complexity/noUselessConstructor: <explanation>
 	constructor(scope: paper.PaperScope) {
@@ -27,13 +28,27 @@ class Render extends RectRadius implements IRenderCarpet {
 	private _watchProps(props: RenderProps) {
 		this.imageScale = calculateImageScale(props.height);
 		this.radii = this.modifyRectRadius(props.width, props.height, props.radius);
-		// this.blockSize = calculateOptimalSquareSize({
-		// 	x: props.width - BLOCK_PADDING * 2,
-		// 	y: props.height - BLOCK_PADDING * 2,
-		// 	defaultSize: BLOCK_SIZE,
-		// 	tolerance: 0.2 * CM_TO_PX,
-		// 	evenOdd: 'even',
-		// });
+
+		// 因为矩形的宽高不固定，为了让每个格子的大小一致，需要动态计算每个格子的大小
+		const segmentLength = this.calculatePathSegmentLength(props.width, props.height, props.radius);
+		const [allBlockCount, allRemainSpace] = segmentLength.reduce(
+			(acc, curr) => {
+				const blockCount = Math.floor(curr / BLOCK_SIZE);
+				// 剩余空间
+				const remainSpace = curr - blockCount * BLOCK_SIZE;
+
+				acc[0] += blockCount;
+				acc[1] += remainSpace;
+
+				return acc;
+			},
+			[0, 0],
+		);
+
+		// 每个格子需要补充的长度
+		const remaiPadding = allRemainSpace / allBlockCount;
+		this.blockSize = BLOCK_SIZE + remaiPadding;
+		this.blockPadding = BLOCK_PADDING - remaiPadding / 2;
 	}
 
 	private _createCenterText(props: RenderProps) {
@@ -53,25 +68,25 @@ class Render extends RectRadius implements IRenderCarpet {
 	private _createBorderPath(props: RenderProps) {
 		this.borderPath?.remove();
 
-		const radii = this.changeRadius(this.radii, BLOCK_PADDING / 2);
+		const radii = this.changeRadius(this.radii, this.blockPadding / 2);
 
 		this.borderPath = this.drawRectRadius(
-			BLOCK_PADDING / 2,
-			BLOCK_PADDING / 2,
-			props.width - BLOCK_PADDING,
-			props.height - BLOCK_PADDING,
+			this.blockPadding / 2,
+			this.blockPadding / 2,
+			props.width - this.blockPadding,
+			props.height - this.blockPadding,
 			radii,
 		);
 
 		this.borderPath.fillColor = new this.scope.Color('white');
-		this.borderPath.strokeWidth = BLOCK_PADDING;
+		this.borderPath.strokeWidth = this.blockPadding;
 		this.borderPath.strokeColor = new this.scope.Color('black');
 	}
 
 	private _createInsidePath(props: RenderProps) {
 		this.insidePath?.remove();
 
-		const offset = BLOCK_PADDING + this.blockSize * 1.5;
+		const offset = this.blockPadding + this.blockSize * 1.5;
 		const radii = this.changeRadius(this.radii, offset);
 
 		this.insidePath = this.drawRectRadius(offset, offset, props.width - offset * 2, props.height - offset * 2, radii);
@@ -85,7 +100,7 @@ class Render extends RectRadius implements IRenderCarpet {
 	private _createOutsidePath(props: RenderProps) {
 		this.outsidePath?.remove();
 
-		const offset = BLOCK_PADDING + this.blockSize * 0.5;
+		const offset = this.blockPadding + this.blockSize * 0.5;
 		const radii = this.changeRadius(this.radii, offset);
 
 		this.outsidePath = this.drawRectRadius(offset, offset, props.width - offset * 2, props.height - offset * 2, radii);

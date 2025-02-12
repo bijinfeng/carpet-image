@@ -1,4 +1,5 @@
 import type { IRadius } from '@/types';
+import { uniq } from 'lodash-es';
 
 export interface CutPoint {
 	position: paper.Point;
@@ -279,5 +280,44 @@ export class RectRadius {
 		path.closePath();
 
 		return path;
+	}
+
+	// 计算一个四分之一圆弧的长度
+	public calculateQuarterArcLength(radius: number) {
+		return (Math.PI * radius) / 2;
+	}
+
+	// 计算路径中每个线段的长度，直线连接一个曲线时，视为一个线段
+	public calculatePathSegmentLength(rectWidth: number, rectHeight: number, radii: IRadius) {
+		const segmentLength = [
+			this.calculateQuarterArcLength(radii.leftTop), // 左上角
+			rectWidth - radii.leftTop - radii.rightTop, // 上边
+			this.calculateQuarterArcLength(radii.rightTop), // 右上角
+			rectHeight - radii.rightTop - radii.rightBottom, // 右边
+			this.calculateQuarterArcLength(radii.rightBottom), // 右下角
+			rectWidth - radii.rightBottom - radii.leftBottom, // 下边
+			this.calculateQuarterArcLength(radii.leftBottom), // 左下角
+			rectHeight - radii.leftBottom - radii.leftTop, // 左边
+		];
+
+		const result = segmentLength.reduce((acc: Array<number | null>, curr) => {
+			if (curr === 0) {
+				acc.push(null); // 使用 null 作为分隔符
+			} else {
+				if (!acc.length || acc[acc.length - 1] === null) {
+					acc.push(curr);
+				} else {
+					(acc[acc.length - 1] as number) += curr;
+				}
+			}
+			return acc;
+		}, []);
+
+		// 如果第一个和最后一个都不是 null，将它们合并
+		if (result.length > 2 && result[0] !== null && result[result.length - 1] !== null) {
+			(result[0] as number) += result.pop() as number;
+		}
+
+		return uniq(result.filter((item) => item !== null) as number[]);
 	}
 }

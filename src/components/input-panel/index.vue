@@ -1,39 +1,35 @@
 <script setup lang="ts">
-import type { HTMLAttributes } from 'vue'
-import { NumberInput } from '@/components/ui/number-input'
-import { CM_TO_PX } from '@/constants'
-import { cn } from '@/lib/utils'
-import { round } from 'lodash-es'
-import { computed, useSlots } from 'vue'
+import { NumberInput } from '@/components/ui/number-input';
+import { CM_TO_PX } from '@/constants';
+import { cn } from '@/lib/utils';
+import type { HTMLAttributes } from 'vue';
+import { computed, useSlots } from 'vue';
 
 interface InputPanelProps {
-  class?: HTMLAttributes['class']
-  modelValue?: number
-  placeholder?: string
-  textAlign?: 'left' | 'center' | 'right'
-  min?: number
-  max?: number
+	class?: HTMLAttributes['class'];
+	modelValue?: number;
+	placeholder?: string;
+	textAlign?: 'left' | 'center' | 'right';
+	min?: number;
+	max?: number;
 }
 
 const props = withDefaults(defineProps<InputPanelProps>(), {
-  modelValue: 0,
-})
+	modelValue: 0,
+});
 
-const emits = defineEmits<{
-  (e: 'update:modelValue', payload: number): void
-}>()
+const emits = defineEmits<(e: 'update:modelValue', payload: number) => void>();
 
 // 使用 useSlots 获取插槽对象
-const slots = useSlots()
+const slots = useSlots();
 
-const modelValue = computed(() => round(props.modelValue / CM_TO_PX, 1))
+const modelValue = computed(() => props.modelValue / CM_TO_PX);
 
-const hasPrefixIcon = !!slots.prefix
-const hasSuffixIcon = !!slots.suffix
+const hasPrefixIcon = !!slots.prefix;
+const hasSuffixIcon = !!slots.suffix;
 
 function handleChange(num: number) {
-  const newValue = Math.round(num * CM_TO_PX)
-  emits('update:modelValue', newValue)
+	emits('update:modelValue', num * CM_TO_PX);
 }
 </script>
 
