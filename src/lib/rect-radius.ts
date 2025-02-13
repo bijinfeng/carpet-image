@@ -1,5 +1,4 @@
 import type { IRadius } from '@/types';
-import { uniq } from 'lodash-es';
 
 export interface CutPoint {
 	position: paper.Point;
@@ -318,6 +317,6 @@ export class RectRadius {
 			(result[0] as number) += result.pop() as number;
 		}
 
-		return uniq(result.filter((item) => item !== null) as number[]);
+		return result.filter((item) => item !== null) as number[];
 	}
 }
