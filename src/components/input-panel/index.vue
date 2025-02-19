@@ -2,6 +2,7 @@
 import { NumberInput } from '@/components/ui/number-input';
 import { CM_TO_PX } from '@/constants';
 import { cn } from '@/lib/utils';
+import { Decimal } from 'decimal.js';
 import type { HTMLAttributes } from 'vue';
 import { computed, useSlots } from 'vue';
 
@@ -23,13 +24,13 @@ const emits = defineEmits<(e: 'update:modelValue', payload: number) => void>();
 // 使用 useSlots 获取插槽对象
 const slots = useSlots();
 
-const modelValue = computed(() => props.modelValue / CM_TO_PX);
+const modelValue = computed(() => Decimal.div(props.modelValue, CM_TO_PX).toNumber());
 
 const hasPrefixIcon = !!slots.prefix;
 const hasSuffixIcon = !!slots.suffix;
 
 function handleChange(num: number) {
-	emits('update:modelValue', num * CM_TO_PX);
+	emits('update:modelValue', Decimal.mul(num, CM_TO_PX).toNumber());
 }
 </script>
 

@@ -1,5 +1,6 @@
 import { carpetList } from '@/render';
 import type { CarpetData, IContextState } from '@/types';
+import { useTitle } from '@vueuse/core';
 
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
@@ -23,10 +24,12 @@ function createContextState(data: CarpetData): IContextState {
 export const useLayoutStore = defineStore('layout', () => {
 	const activeCarpet = ref<CarpetData>(carpetList[0]);
 	const contextState = reactive(createContextState(carpetList[0]));
+	const title = useTitle(`${activeCarpet.value.name} - Alchemist`);
 
 	const switchCarpet = (item: CarpetData) => {
 		if (item.id === activeCarpet.value.id) return;
 
+		title.value = `${item.name} - Alchemist`;
 		activeCarpet.value = item;
 		Object.assign(contextState, createContextState(item));
 	};

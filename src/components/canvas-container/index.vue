@@ -14,6 +14,7 @@ import FormControl from './form.vue';
 import Paper from './paper.vue';
 import type PaperInstance from './paper.vue';
 import ScaleControl from './scale-control.vue';
+import TempPaper from './temp-paper.vue';
 
 type PaperType = InstanceType<typeof PaperInstance>;
 
@@ -47,6 +48,7 @@ async function handleDownload() {
     </div>
     <Separator />
     <div class="flex flex-1">
+      <TempPaper />
       <Container>
         <Paper ref="canvasRef" :key="activeCarpet.id" />
       </Container>

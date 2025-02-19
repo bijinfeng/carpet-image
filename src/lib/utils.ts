@@ -35,3 +35,15 @@ export function calculateImageScale(_height: number) {
 
 	return 1 + Math.ceil((height - 30) / 20) * 0.2;
 }
+
+// 获取小数位数
+export function getDecimalPlacesFixed(num: number) {
+	const numStr = String(Number(num)); // 将数字转换为字符串,并进行精度处理,10 可以根据业务需要调整。
+	if (!numStr.includes('.')) {
+		// 如果是整数,小数位数为 0
+		return 0;
+	}
+	return numStr.split('.')[1].length; // 分割字符串,获取小数部分的长度
+}
+
+export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

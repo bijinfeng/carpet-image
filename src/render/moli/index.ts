@@ -1,6 +1,7 @@
 import moliUrl from '@/assets/moli/moli.webp';
 import { CM_TO_PX } from '@/constants';
 import type { CarpetData } from '@/types';
+import { Decimal } from 'decimal.js';
 import { render } from './render';
 
 export const moli: CarpetData = {
@@ -8,6 +9,6 @@ export const moli: CarpetData = {
 	name: '墨语',
 	assetUrl: moliUrl,
 	step: 0.1,
-	defaultSize: { width: CM_TO_PX * 240, height: CM_TO_PX * 60 },
+	defaultSize: { width: Decimal.mul(CM_TO_PX, 240).toNumber(), height: Decimal.mul(CM_TO_PX, 56).toNumber() },
 	render,
 };

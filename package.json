@@ -19,6 +19,7 @@
 		"@vueuse/core": "^12.2.0",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"decimal.js": "^10.5.0",
 		"lodash-es": "^4.17.21",
 		"lucide-vue-next": "^0.469.0",
 		"paper": "^0.12.18",

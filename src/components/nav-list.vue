@@ -14,7 +14,7 @@ const layoutStore = useLayoutStore();
     <div class="px-4 py-2 font-semibold">
       <div class="flex h-9 items-center gap-2">
         <LogoIcon class="w-5 h-5" />
-        <span>Acme Inc</span>
+        <span>Alchemist</span>
       </div>
     </div>
     <Separator />
