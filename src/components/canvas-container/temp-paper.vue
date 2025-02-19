@@ -13,5 +13,5 @@ onMounted(() => {
 </script>
 
 <template>
-	<canvas ref="tempCanvas" class="hidden" />
+	<canvas ref="tempCanvas" class="hidden" style="zoom: 0.1;" />
 </template>

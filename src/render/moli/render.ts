@@ -82,13 +82,9 @@ class Render extends RectRadius implements IRenderCarpet {
 		this.borderPath.fillColor = new this.scope.Color('black');
 	}
 
-	private _renderTemp(rectWidth: number, rectHeight: number, blockSize: number, blockPadding: number, radii: IRadius) {
+	private _renderTemp(rectWidth: number, rectHeight: number, blockSize: number, radii: IRadius) {
 		tempCanvasRender.scope.activate();
 		tempCanvasRender.updateSize(rectWidth, rectHeight);
-
-		const borderRadii = tempCanvasRender.changeRadius(radii, blockPadding);
-		const borderDashPath = tempCanvasRender.drawRectRadius(0, 0, rectWidth, rectHeight, borderRadii);
-		borderDashPath.fillColor = new tempCanvasRender.scope.Color('white');
 
 		const outOffset = Decimal.div(blockSize, 2).toNumber();
 		const outRectWidth = rectWidth - blockSize;
@@ -102,9 +98,10 @@ class Render extends RectRadius implements IRenderCarpet {
 			outRadii,
 		);
 		outsideDashPath.strokeWidth = blockSize;
-		outsideDashPath.strokeColor = new tempCanvasRender.scope.Color('black');
+		outsideDashPath.strokeColor = new tempCanvasRender.scope.Color('white');
+		outsideDashPath.fillColor = new tempCanvasRender.scope.Color('black');
 		outsideDashPath.dashArray = [blockSize];
-		outsideDashPath.dashOffset = blockSize / 2;
+		outsideDashPath.dashOffset = -blockSize / 2;
 
 		const inOffset = Decimal.mul(blockSize, 1.5).toNumber();
 		const inRectWidth = rectWidth - blockSize * 3;
@@ -112,13 +109,23 @@ class Render extends RectRadius implements IRenderCarpet {
 		const inRadii = tempCanvasRender.changeRadius(radii, inOffset);
 		const insideDashPath = tempCanvasRender.drawRectRadius(inOffset, inOffset, inRectWidth, inRectHeight, inRadii);
 		insideDashPath.strokeWidth = blockSize;
-		insideDashPath.strokeColor = new tempCanvasRender.scope.Color('black');
+		insideDashPath.strokeColor = new tempCanvasRender.scope.Color('white');
+		insideDashPath.fillColor = new tempCanvasRender.scope.Color('white');
 		insideDashPath.dashArray = [blockSize];
-		insideDashPath.dashOffset = blockSize / 2;
+		insideDashPath.dashOffset = -blockSize / 2;
+
+		const copyInsideDashPath = insideDashPath.clone();
+		copyInsideDashPath.strokeColor = new tempCanvasRender.scope.Color('black');
+		copyInsideDashPath.dashOffset += blockSize;
 
 		tempCanvasRender.scope.view.update();
+		const svgText = tempCanvasRender.exportSVG();
 
-		return tempCanvasRender.exportSVG();
+		outsideDashPath.remove();
+		insideDashPath.remove();
+		copyInsideDashPath.remove();
+
+		return svgText;
 	}
 
 	private _createDashPath(props: RenderProps) {
@@ -126,7 +133,7 @@ class Render extends RectRadius implements IRenderCarpet {
 		const containerWidth = Decimal.sub(props.width, Decimal.mul(BLOCK_PADDING, 2)).toNumber();
 		const containerHeight = Decimal.sub(props.height, Decimal.mul(BLOCK_PADDING, 2)).toNumber();
 
-		const dashImageSVG = this._renderTemp(this.rectWidth, this.rectHeight, this.blockSize, BLOCK_PADDING, this.radii);
+		const dashImageSVG = this._renderTemp(this.rectWidth, this.rectHeight, this.blockSize, this.radii);
 
 		this.scope.activate();
 
