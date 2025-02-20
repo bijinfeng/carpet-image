@@ -83,7 +83,10 @@ watch(
 
 watch(
 	() => [contextState.value.width, contextState.value.height, contextState.value.radius],
-	() => contentRender?.render(contextState.value),
+	() => {
+		updateViewSize();
+		contentRender?.render(contextState.value);
+	},
 	{ deep: true },
 );
 
