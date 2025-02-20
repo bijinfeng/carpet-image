@@ -1,5 +1,6 @@
 import { CM_TO_PX } from '@/constants';
 import { type ClassValue, clsx } from 'clsx';
+import { Decimal } from 'decimal.js';
 import { twMerge } from 'tailwind-merge';
 
 const imageMagickWorker = new Worker(new URL('@/helper/worker', import.meta.url), {
@@ -45,5 +46,19 @@ export function getDecimalPlacesFixed(num: number) {
 	}
 	return numStr.split('.')[1].length; // 分割字符串,获取小数部分的长度
 }
+
+// 计算能被整除的个数，可以指定奇偶数
+export const countDivisibleNumbers = (length: number, size: number, parity?: 'even' | 'odd') => {
+	let count = Decimal.div(length, size).floor().toNumber();
+	let remainingSpace = Decimal.mod(length, size).toNumber();
+
+	if ((parity === 'even' && count % 2 !== 0) || (parity === 'odd' && count % 2 === 0)) {
+		console.log(4444);
+		count = count - 1;
+		remainingSpace = Decimal.add(remainingSpace, size).toNumber();
+	}
+
+	return { count, remainingSpace };
+};
 
 export const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));

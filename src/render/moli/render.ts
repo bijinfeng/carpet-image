@@ -2,9 +2,10 @@ import textImage from '@/assets/moli/moli-text.jpg';
 import { CM_TO_PX } from '@/constants';
 import { RectRadius } from '@/lib/rect-radius';
 import { tempCanvasRender } from '@/lib/temp-canvas';
-import { calculateImageScale } from '@/lib/utils';
+import { calculateImageScale, countDivisibleNumbers } from '@/lib/utils';
 import type { IRadius, IRenderCarpet, RenderProps } from '@/types';
 import { Decimal } from 'decimal.js';
+import { uniq } from 'lodash-es';
 
 const IMAGE_WIDTH = 1511;
 const IMAGE_HEIGHT = 123;
@@ -27,38 +28,52 @@ class Render extends RectRadius implements IRenderCarpet {
 		super(scope);
 	}
 
-	private _calculateRectOffset(props: RenderProps) {
+	private _calcaulateOffset(props: RenderProps) {
 		const rectWidth = Decimal.sub(props.width, Decimal.mul(BLOCK_PADDING, 2)).toNumber();
 		const rectHeight = Decimal.sub(props.height, Decimal.mul(BLOCK_PADDING, 2)).toNumber();
+		const radii = this.changeRadius(this.radii, BLOCK_PADDING);
 
-		let blockXCount = Decimal.div(rectWidth, BLOCK_SIZE).floor().toNumber();
-		let remainingXSpace = Decimal.mod(rectWidth, BLOCK_SIZE).toNumber();
-		if (blockXCount % 2 === 0) {
-			blockXCount += 1;
-			remainingXSpace = Decimal.add(remainingXSpace, BLOCK_SIZE).toNumber();
+		const segments = this.calculatePathSegmentLength(rectWidth, rectHeight, radii);
+
+		if (segments.length === 1) {
+			// 有四个圆角或者三个圆角
+			const roundLength = segments[0];
+
+			// 判断是三个圆角还是四个圆角，决定了是需要奇数个方块还是偶数个方块
+			const isThreeRounded = Object.values(radii).includes(0);
+			const { count, remainingSpace } = countDivisibleNumbers(roundLength, BLOCK_SIZE, isThreeRounded ? 'odd' : 'even');
+			const perBlockSpace = Decimal.div(remainingSpace, count).toNumber();
+
+			this.blockSize = Decimal.add(BLOCK_SIZE, perBlockSpace).toNumber();
+			this.rectWidth = rectWidth;
+			this.rectHeight = rectHeight;
+		} else {
+			const uniqSegments = uniq(segments);
+
+			const perSegmentBlockSpace = uniqSegments.map((segment) => {
+				const { count, remainingSpace } = countDivisibleNumbers(segment, BLOCK_SIZE, 'odd');
+				return Decimal.div(remainingSpace, count).toNumber();
+			});
+
+			const minPerBlockSpace = Math.min(...perSegmentBlockSpace);
+
+			this.blockSize = Decimal.add(BLOCK_SIZE, minPerBlockSpace).toNumber();
+			this.rectWidth = Decimal.mul(
+				countDivisibleNumbers(rectWidth, this.blockSize, 'odd').count,
+				this.blockSize,
+			).toNumber();
+			this.rectHeight = Decimal.mul(
+				countDivisibleNumbers(rectHeight, this.blockSize, 'odd').count,
+				this.blockSize,
+			).toNumber();
 		}
-
-		let blockYCount = Decimal.div(rectHeight, BLOCK_SIZE).floor().toNumber();
-		let remainingYSpace = Decimal.mod(rectHeight, BLOCK_SIZE).toNumber();
-		if (blockYCount % 2 === 0) {
-			blockYCount += 1;
-			remainingYSpace = Decimal.add(remainingYSpace, BLOCK_SIZE).toNumber();
-		}
-
-		const perBlockXSpace = Decimal.div(remainingXSpace, blockXCount).toNumber();
-		const perBlockYSpace = Decimal.div(remainingYSpace, blockXCount).toNumber();
-		const minBlockSpace = Math.min(perBlockXSpace, perBlockYSpace);
-
-		this.blockSize += minBlockSpace;
-		this.rectWidth = Decimal.mul(blockXCount, this.blockSize).toNumber();
-		this.rectHeight = Decimal.mul(blockYCount, this.blockSize).toNumber();
 	}
 
 	private _watchProps(props: RenderProps) {
 		this.imageScale = calculateImageScale(props.height);
-		this._calculateRectOffset(props);
-
 		this.radii = this.modifyRectRadius(this.rectWidth, this.rectHeight, props.radius);
+
+		this._calcaulateOffset(props);
 	}
 
 	private _createCenterText(props: RenderProps) {
@@ -141,9 +156,8 @@ class Render extends RectRadius implements IRenderCarpet {
 			expandShapes: true,
 			onLoad: (svg: paper.Item) => {
 				svg.applyMatrix = false;
-				svg.bounds.width = containerWidth;
-				svg.bounds.height = containerHeight;
-				svg.position = new this.scope.Point(props.width / 2, props.height / 2);
+				svg.bounds.size = new this.scope.Size(containerWidth, containerHeight);
+				svg.position = this.scope.view.center;
 			},
 		});
 	}
