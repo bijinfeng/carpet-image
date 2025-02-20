@@ -299,8 +299,6 @@ export class RectRadius {
 			rectHeight - radii.leftBottom - radii.leftTop, // 左边
 		];
 
-		console.log(rectWidth, rectHeight, radii);
-
 		const result = segmentLength.reduce((acc: Array<number | null>, curr) => {
 			if (curr === 0) {
 				acc.push(null); // 使用 null 作为分隔符

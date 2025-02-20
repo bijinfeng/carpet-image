@@ -1,77 +1,84 @@
 <script setup lang="ts">
-import { ref, type HTMLAttributes, useTemplateRef, watch } from "vue"
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
+import { type HTMLAttributes, ref, useTemplateRef, watch } from 'vue';
 
 const REGEXP_NUMBER = /^-?(?:\d+|\d+\.\d+|\.\d+)(?:[eE][-+]?\d+)?$/;
 
 interface NumberInputProps {
-  label?: string
-  min?: number
-  max?: number
-  step?: number
-  placeholder?: string
-  defaultValue?:  number
-  modelValue?: number
-  class?: HTMLAttributes['class']
+	label?: string;
+	min?: number;
+	max?: number;
+	step?: number;
+	placeholder?: string;
+	defaultValue?: number;
+	modelValue?: number;
+	class?: HTMLAttributes['class'];
 }
 
 const props = withDefaults(defineProps<NumberInputProps>(), {
-  step: 0.01,
-  modelValue: 0,
-  min: -Infinity,
-  max: Infinity,
-})
+	step: 0.01,
+	modelValue: 0,
+	min: Number.NEGATIVE_INFINITY,
+	max: Number.POSITIVE_INFINITY,
+});
 
-const emits = defineEmits<{
-  (e: 'update:modelValue', payload: number): void
-}>()
+const emits = defineEmits<(e: 'update:modelValue', payload: number) => void>();
 
-const inputRef = useTemplateRef<HTMLInputElement>('input')
-const inputValue = ref<string | number>('')
+// 处理输入框的值
+const formatValue = (value: number) => {
+	let newValue = typeof value !== 'number' ? Number.parseFloat(value) : value;
+
+	if (!Number.isNaN(newValue)) {
+		if (props.min <= props.max) {
+			newValue = Math.min(props.max, Math.max(props.min, newValue));
+		}
+	}
+
+	return newValue;
+};
+
+const inputRef = useTemplateRef<HTMLInputElement>('input');
+const inputValue = ref<string | number>(formatValue(props.modelValue));
 
 const setValue = (value: number) => {
-  const oldValue = inputValue.value;
-  let newValue = typeof value !== 'number' ? parseFloat(value) : value;
+	const oldValue = inputValue.value;
+	const newValue = formatValue(value);
 
-  if (!isNaN(newValue)) {
-    if (props.min <= props.max) {
-      newValue = Math.min(props.max, Math.max(props.min, newValue));
-    }
-  }
+	inputValue.value = newValue;
 
-  inputValue.value = newValue;
+	if (newValue === oldValue && inputRef.value) {
+		// Force to override the number in the input box (#13).
+		inputRef.value.value = String(newValue);
+	}
 
-  if (newValue === oldValue && inputRef.value) {
-    // Force to override the number in the input box (#13).
-    inputRef.value.value = String(newValue);
-  }
+	emits('update:modelValue', newValue);
+};
 
-  emits('update:modelValue', newValue);
-}
-
-const change = (event: any) => {
-  setValue(event.target.value);
-}
+// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+const change = (event: any) => setValue(event.target.value);
 
 const paste = (event: ClipboardEvent) => {
-  const clipboardData = event.clipboardData || (window as any).clipboardData;
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+	const clipboardData = event.clipboardData || (window as any).clipboardData;
 
-  if (clipboardData && !REGEXP_NUMBER.test(clipboardData.getData('text'))) {
-    event.preventDefault();
-  }
-}
+	if (clipboardData && !REGEXP_NUMBER.test(clipboardData.getData('text'))) {
+		event.preventDefault();
+	}
+};
 
-watch(() => props.modelValue, (newValue, oldValue) => {
-  if (
-    // Avoid triggering change event when created
-    !(isNaN(newValue) && typeof oldValue === 'undefined')
-
-    // Avoid infinite loop
-    && newValue !== inputValue.value
-  ) {
-    setValue(newValue);
-  }
-}, { immediate: true })
+watch(
+	() => props.modelValue,
+	(newValue, oldValue) => {
+		if (
+			// Avoid triggering change event when created
+			!(Number.isNaN(newValue) && typeof oldValue === 'undefined') &&
+			// Avoid infinite loop
+			newValue !== inputValue.value
+		) {
+			setValue(newValue);
+		}
+	},
+);
 </script>
 
 <template>

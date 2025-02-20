@@ -3,6 +3,7 @@ import { NumberInput } from '@/components/ui/number-input';
 import { CM_TO_PX } from '@/constants';
 import { cn } from '@/lib/utils';
 import { Decimal } from 'decimal.js';
+import { isNumber } from 'lodash-es';
 import type { HTMLAttributes } from 'vue';
 import { computed, useSlots } from 'vue';
 
@@ -24,12 +25,16 @@ const emits = defineEmits<(e: 'update:modelValue', payload: number) => void>();
 // 使用 useSlots 获取插槽对象
 const slots = useSlots();
 
-const modelValue = computed(() => Decimal.div(props.modelValue, CM_TO_PX).toNumber());
+const modelValue = computed(() => {
+	const num = isNumber(props.modelValue) && !Number.isNaN(props.modelValue) ? props.modelValue : 0;
+	return Decimal.div(num, CM_TO_PX).toNumber();
+});
 
-const hasPrefixIcon = !!slots.prefix;
-const hasSuffixIcon = !!slots.suffix;
+const hasPrefixIcon: boolean = !!slots.prefix;
+const hasSuffixIcon: boolean = !!slots.suffix;
 
-function handleChange(num: number) {
+function handleChange(_num: number) {
+	const num = isNumber(_num) && !Number.isNaN(_num) ? _num : 0;
 	emits('update:modelValue', Decimal.mul(num, CM_TO_PX).toNumber());
 }
 </script>
