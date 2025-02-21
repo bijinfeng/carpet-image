@@ -1,23 +1,25 @@
 import lbFlower from '@/assets/zhongxia/lbhua.png';
 import rtFlower from '@/assets/zhongxia/rthua.png';
 import textImage from '@/assets/zhongxia/zhongxia-text.png';
+import { PIXEL_RATIO } from '@/constants';
 import { RectRadius } from '@/lib/rect-radius';
 import { calculateImageScale } from '@/lib/utils';
 import type { IRadius, IRenderCarpet, RenderProps } from '@/types';
+import { Decimal } from 'decimal.js';
 
-const BLOCK_SIZE = 39;
-const BLOCK_PADDING = 10;
-const RECT_SIZE = 60;
+const BLOCK_SIZE = Decimal.div(39, PIXEL_RATIO).toNumber();
+const BLOCK_PADDING = Decimal.div(10, PIXEL_RATIO).toNumber();
+const RECT_SIZE = Decimal.div(60, PIXEL_RATIO).toNumber();
 
 // 文字图片
-const IMAGE_WIDTH = 765;
-const IMAGE_HEIGHT = 180;
+const IMAGE_WIDTH = Decimal.div(765, PIXEL_RATIO).toNumber();
+const IMAGE_HEIGHT = Decimal.div(180, PIXEL_RATIO).toNumber();
 // 右上角花朵图片
-const IMAGE_RTFLOWER_WIDTH = 531;
-const IMAGE_RTFLOWER_HEIGHT = 339;
+const IMAGE_RTFLOWER_WIDTH = Decimal.div(531, PIXEL_RATIO).toNumber();
+const IMAGE_RTFLOWER_HEIGHT = Decimal.div(339, PIXEL_RATIO).toNumber();
 // 左下角花朵图片
-const IMAGE_LBFLOWER_WIDTH = 542;
-const IMAGE_LBFLOWER_HEIGHT = 437;
+const IMAGE_LBFLOWER_WIDTH = Decimal.div(542, PIXEL_RATIO).toNumber();
+const IMAGE_LBFLOWER_HEIGHT = Decimal.div(437, PIXEL_RATIO).toNumber();
 
 // 麦穗
 const wheatearData = `

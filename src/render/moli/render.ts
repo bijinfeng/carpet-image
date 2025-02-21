@@ -1,5 +1,5 @@
 import textImage from '@/assets/moli/moli-text.jpg';
-import { CM_TO_PX } from '@/constants';
+import { CM_TO_PX, PIXEL_RATIO } from '@/constants';
 import { RectRadius } from '@/lib/rect-radius';
 import { tempCanvasRender } from '@/lib/temp-canvas';
 import { calculateImageScale, countDivisibleNumbers } from '@/lib/utils';
@@ -7,9 +7,9 @@ import type { IRadius, IRenderCarpet, RenderProps } from '@/types';
 import { Decimal } from 'decimal.js';
 import { uniq } from 'lodash-es';
 
-const IMAGE_WIDTH = 1511;
-const IMAGE_HEIGHT = 123;
-const BLOCK_SIZE = CM_TO_PX * 2;
+const IMAGE_WIDTH = Decimal.div(1511, PIXEL_RATIO).toNumber();
+const IMAGE_HEIGHT = Decimal.div(123, PIXEL_RATIO).toNumber();
+const BLOCK_SIZE = Decimal.mul(CM_TO_PX, 2).toNumber();
 const BLOCK_PADDING = CM_TO_PX;
 
 class Render extends RectRadius implements IRenderCarpet {
