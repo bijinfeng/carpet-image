@@ -1,6 +1,7 @@
 import { carpetList } from '@/render';
 import type { CarpetData, IContextState } from '@/types';
 import { useTitle } from '@vueuse/core';
+import paper from 'paper';
 
 import { defineStore } from 'pinia';
 import { reactive, ref } from 'vue';
@@ -28,6 +29,9 @@ export const useLayoutStore = defineStore('layout', () => {
 
 	const switchCarpet = (item: CarpetData) => {
 		if (item.id === activeCarpet.value.id) return;
+
+		// 清空画布
+		paper.project.clear();
 
 		title.value = `${item.name} - Alchemist`;
 		activeCarpet.value = item;

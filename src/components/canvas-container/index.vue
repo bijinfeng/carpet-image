@@ -19,7 +19,7 @@ import TempPaper from './temp-paper.vue';
 type PaperType = InstanceType<typeof PaperInstance>;
 
 const layoutStore = useLayoutStore();
-const { contextState, activeCarpet } = storeToRefs(layoutStore);
+const { contextState } = storeToRefs(layoutStore);
 const downloading = ref(false);
 const canvasRef = useTemplateRef<PaperType>('canvasRef');
 
@@ -50,7 +50,7 @@ async function handleDownload() {
     <div class="flex flex-1">
       <TempPaper />
       <Container>
-        <Paper ref="canvasRef" :key="activeCarpet.id" />
+        <Paper ref="canvasRef" />
       </Container>
       <Separator orientation="vertical" />
       <FormControl />

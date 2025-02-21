@@ -5,13 +5,12 @@ import { useLayoutStore } from '@/stores/layout';
 import type { IRenderCarpet } from '@/types';
 import paper from 'paper';
 import { storeToRefs } from 'pinia';
-import { onMounted, useTemplateRef, watch } from 'vue';
+import { computed, onMounted, useTemplateRef, watch } from 'vue';
 
 const layoutStore = useLayoutStore();
 const { contextState, activeCarpet } = storeToRefs(layoutStore);
 const canvasRef = useTemplateRef<HTMLCanvasElement>('myCanvas');
-const scope = new paper.PaperScope();
-let contentRender: IRenderCarpet | null = null;
+const contentRender = computed<IRenderCarpet>(() => activeCarpet.value.render(paper));
 
 let rectangle: paper.Path.Rectangle | null;
 let text: paper.PointText | null;
@@ -19,7 +18,7 @@ let text: paper.PointText | null;
 const createText = () => {
 	if (contextState.value.remark) {
 		if (!rectangle) {
-			rectangle = new scope.Path.Rectangle({
+			rectangle = new paper.Path.Rectangle({
 				point: [-TEXT_LINE_HEIGHT, 0],
 				size: [TEXT_LINE_HEIGHT, contextState.value.height],
 				fillColor: 'white',
@@ -28,7 +27,7 @@ const createText = () => {
 
 		if (!text) {
 			// 创建一个 PointText 对象
-			text = new scope.PointText({
+			text = new paper.PointText({
 				point: [-TEXT_LINE_HEIGHT, contextState.value.height - 5], // 设置文字的位置
 				content: contextState.value.remark, // 设置文字内容
 				fillColor: TEXT_PRIMARY_COLOR, // 设置文字颜色
@@ -39,7 +38,7 @@ const createText = () => {
 			});
 		}
 
-		rectangle.bounds.size = new scope.Size(TEXT_LINE_HEIGHT, contextState.value.height);
+		rectangle.bounds.size = new paper.Size(TEXT_LINE_HEIGHT, contextState.value.height);
 		text.content = contextState.value.remark;
 		text.position.y = contextState.value.height - 5 - text.bounds.height / 2;
 	} else {
@@ -51,25 +50,24 @@ const createText = () => {
 };
 
 const updateViewSize = () => {
-	scope.view.viewSize.height = contextState.value.height;
+	paper.view.viewSize.height = contextState.value.height;
 
 	if (contextState.value.remark) {
-		scope.view.viewSize.width = contextState.value.width + TEXT_LINE_HEIGHT;
+		paper.view.viewSize.width = contextState.value.width + TEXT_LINE_HEIGHT;
 		// 将画布坐标系向右平移 TEXT_LINE_HEIGHT
-		scope.view.matrix = new scope.Matrix().translate(TEXT_LINE_HEIGHT, 0);
+		paper.view.matrix = new paper.Matrix().translate(TEXT_LINE_HEIGHT, 0);
 	} else {
-		scope.view.viewSize.width = contextState.value.width;
-		scope.view.matrix.reset();
+		paper.view.viewSize.width = contextState.value.width;
+		paper.view.matrix.reset();
 	}
 };
 
 onMounted(() => {
 	if (canvasRef.value) {
 		// 初始化 paper.js 画布
-		scope.setup(canvasRef.value);
+		paper.setup(canvasRef.value);
 		updateViewSize();
-		contentRender = activeCarpet.value.render(scope);
-		contentRender.render(contextState.value);
+		contentRender.value.render(contextState.value);
 	}
 });
 
@@ -85,7 +83,7 @@ watch(
 	() => [contextState.value.width, contextState.value.height, contextState.value.radius],
 	() => {
 		updateViewSize();
-		contentRender?.render(contextState.value);
+		contentRender.value.render(contextState.value);
 	},
 	{ deep: true },
 );
