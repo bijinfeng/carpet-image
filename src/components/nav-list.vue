@@ -3,6 +3,7 @@ import LogoIcon from '@/assets/logo.svg?component';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import UpdatePanel from '@/components/update-panel/index.vue';
 import { carpetList } from '@/render';
 import { useLayoutStore } from '@/stores/layout';
 
@@ -10,7 +11,7 @@ const layoutStore = useLayoutStore();
 </script>
 
 <template>
-  <div class="flex h-full max-h-screen flex-col">
+  <div class="relative flex h-full max-h-screen flex-col">
     <div class="px-4 py-2 font-semibold">
       <div class="flex h-9 items-center gap-2">
         <LogoIcon class="w-5 h-5" />
@@ -39,5 +40,9 @@ const layoutStore = useLayoutStore();
         </div>
       </Card>
     </ScrollArea>
+
+    <div class="p-2">
+      <UpdatePanel />
+    </div>
   </div>
 </template>
