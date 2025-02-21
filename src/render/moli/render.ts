@@ -118,27 +118,39 @@ class Render extends RectRadius implements IRenderCarpet {
 		outsideDashPath.dashArray = [blockSize];
 		outsideDashPath.dashOffset = -blockSize / 2;
 
-		const inOffset = Decimal.mul(blockSize, 1.5).toNumber();
-		const inRectWidth = rectWidth - blockSize * 3;
-		const inRectHeight = rectHeight - blockSize * 3;
-		const inRadii = tempCanvasRender.changeRadius(radii, inOffset);
-		const insideDashPath = tempCanvasRender.drawRectRadius(inOffset, inOffset, inRectWidth, inRectHeight, inRadii);
-		insideDashPath.strokeWidth = blockSize;
+		const insideDashPath = outsideDashPath.clone();
+		insideDashPath.strokeWidth = blockSize * 3;
+		insideDashPath.dashOffset = blockSize / 2;
 		insideDashPath.strokeColor = new tempCanvasRender.scope.Color('white');
-		insideDashPath.fillColor = new tempCanvasRender.scope.Color('white');
-		insideDashPath.dashArray = [blockSize];
-		insideDashPath.dashOffset = -blockSize / 2;
 
-		const copyInsideDashPath = insideDashPath.clone();
-		copyInsideDashPath.strokeColor = new tempCanvasRender.scope.Color('black');
-		copyInsideDashPath.dashOffset += blockSize;
+		const splitDashPath = tempCanvasRender.drawRectRadius(
+			blockSize,
+			blockSize,
+			Decimal.sub(rectWidth, Decimal.mul(blockSize, 2)).toNumber(),
+			Decimal.sub(rectHeight, Decimal.mul(blockSize, 2)).toNumber(),
+			tempCanvasRender.changeRadius(radii, blockSize),
+		);
 
-		tempCanvasRender.scope.view.update();
+		const outsideClipGroup = new tempCanvasRender.scope.Group([splitDashPath, insideDashPath]);
+		outsideClipGroup.clipped = true;
+
+		const whitePath = tempCanvasRender.drawRectRadius(
+			Decimal.mul(blockSize, 2).toNumber(),
+			Decimal.mul(blockSize, 2).toNumber(),
+			Decimal.sub(rectWidth, Decimal.mul(blockSize, 4)).toNumber(),
+			Decimal.sub(rectHeight, Decimal.mul(blockSize, 4)).toNumber(),
+			tempCanvasRender.changeRadius(radii, Decimal.mul(blockSize, 2).toNumber()),
+		);
+		whitePath.strokeWidth = 1;
+		whitePath.strokeColor = new tempCanvasRender.scope.Color('white');
+		whitePath.fillColor = new tempCanvasRender.scope.Color('white');
+
 		const svgText = tempCanvasRender.exportSVG();
 
 		outsideDashPath.remove();
 		insideDashPath.remove();
-		copyInsideDashPath.remove();
+		outsideClipGroup.remove();
+		whitePath.remove();
 
 		return svgText;
 	}

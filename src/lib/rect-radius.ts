@@ -1,4 +1,5 @@
 import type { IRadius } from '@/types';
+import Decimal from 'decimal.js';
 
 export interface CutPoint {
 	position: paper.Point;
@@ -12,50 +13,84 @@ export class RectRadius {
 	public drawRectRadius(rectX: number, rectY: number, rectWidth: number, rectHeight: number, radii: IRadius) {
 		const path = new this.scope.Path();
 
-		// 计算圆角圆弧的控制点，使用建议的贝塞尔控制点比率
-		const kappa = 0.552284749831;
+		// 使用 Decimal.js 来处理高精度计算
+		const kappa = new Decimal(0.552284749831);
+
+		// 将输入参数转换为 Decimal 类型
+		const x = new Decimal(rectX);
+		const y = new Decimal(rectY);
+		const width = new Decimal(rectWidth);
+		const height = new Decimal(rectHeight);
+		const leftTop = new Decimal(radii.leftTop);
+		const rightTop = new Decimal(radii.rightTop);
+		const rightBottom = new Decimal(radii.rightBottom);
+		const leftBottom = new Decimal(radii.leftBottom);
 
 		// 起始点（左上角）
-		path.moveTo(new this.scope.Point(rectX + radii.leftTop, rectY));
+		path.moveTo(new this.scope.Point(x.plus(leftTop).toNumber(), y.toNumber()));
 
 		// 顶边，连接到右上角
-		path.lineTo(new this.scope.Point(rectX + rectWidth - radii.rightTop, rectY));
+		path.lineTo(new this.scope.Point(x.plus(width).minus(rightTop).toNumber(), y.toNumber()));
 
 		// 右上角弧线
 		path.cubicCurveTo(
-			new this.scope.Point(rectX + rectWidth - (1 - kappa) * radii.rightTop, rectY), // 控制点1
-			new this.scope.Point(rectX + rectWidth, rectY + (1 - kappa) * radii.rightTop), // 控制点2
-			new this.scope.Point(rectX + rectWidth, rectY + radii.rightTop), // 终点
+			new this.scope.Point(
+				x
+					.plus(width)
+					.minus(rightTop.mul(new Decimal(1).minus(kappa)))
+					.toNumber(),
+				y.toNumber(),
+			), // 控制点1
+			new this.scope.Point(x.plus(width).toNumber(), y.plus(rightTop.mul(new Decimal(1).minus(kappa))).toNumber()), // 控制点2
+			new this.scope.Point(x.plus(width).toNumber(), y.plus(rightTop).toNumber()), // 终点
 		);
 
 		// 右边，连接到右下角
-		path.lineTo(new this.scope.Point(rectX + rectWidth, rectY + rectHeight - radii.rightBottom));
+		path.lineTo(new this.scope.Point(x.plus(width).toNumber(), y.plus(height).minus(rightBottom).toNumber()));
 
 		// 右下角弧线
 		path.cubicCurveTo(
-			new this.scope.Point(rectX + rectWidth, rectY + rectHeight - (1 - kappa) * radii.rightBottom),
-			new this.scope.Point(rectX + rectWidth - (1 - kappa) * radii.rightBottom, rectY + rectHeight),
-			new this.scope.Point(rectX + rectWidth - radii.rightBottom, rectY + rectHeight),
+			new this.scope.Point(
+				x.plus(width).toNumber(),
+				y
+					.plus(height)
+					.minus(rightBottom.mul(new Decimal(1).minus(kappa)))
+					.toNumber(),
+			),
+			new this.scope.Point(
+				x
+					.plus(width)
+					.minus(rightBottom.mul(new Decimal(1).minus(kappa)))
+					.toNumber(),
+				y.plus(height).toNumber(),
+			),
+			new this.scope.Point(x.plus(width).minus(rightBottom).toNumber(), y.plus(height).toNumber()),
 		);
 
 		// 底边，连接到左下角
-		path.lineTo(new this.scope.Point(rectX + radii.leftBottom, rectY + rectHeight));
+		path.lineTo(new this.scope.Point(x.plus(leftBottom).toNumber(), y.plus(height).toNumber()));
 
 		// 左下角弧线
 		path.cubicCurveTo(
-			new this.scope.Point(rectX + (1 - kappa) * radii.leftBottom, rectY + rectHeight),
-			new this.scope.Point(rectX, rectY + rectHeight - (1 - kappa) * radii.leftBottom),
-			new this.scope.Point(rectX, rectY + rectHeight - radii.leftBottom),
+			new this.scope.Point(x.plus(leftBottom.mul(new Decimal(1).minus(kappa))).toNumber(), y.plus(height).toNumber()),
+			new this.scope.Point(
+				x.toNumber(),
+				y
+					.plus(height)
+					.minus(leftBottom.mul(new Decimal(1).minus(kappa)))
+					.toNumber(),
+			),
+			new this.scope.Point(x.toNumber(), y.plus(height).minus(leftBottom).toNumber()),
 		);
 
 		// 左边，连接到左上角
-		path.lineTo(new this.scope.Point(rectX, rectY + radii.leftTop));
+		path.lineTo(new this.scope.Point(x.toNumber(), y.plus(leftTop).toNumber()));
 
 		// 左上角弧线
 		path.cubicCurveTo(
-			new this.scope.Point(rectX, rectY + (1 - kappa) * radii.leftTop),
-			new this.scope.Point(rectX + (1 - kappa) * radii.leftTop, rectY),
-			new this.scope.Point(rectX + radii.leftTop, rectY),
+			new this.scope.Point(x.toNumber(), y.plus(leftTop.mul(new Decimal(1).minus(kappa))).toNumber()),
+			new this.scope.Point(x.plus(leftTop.mul(new Decimal(1).minus(kappa))).toNumber(), y.toNumber()),
+			new this.scope.Point(x.plus(leftTop).toNumber(), y.toNumber()),
 		);
 
 		// 完成路径闭合
@@ -99,30 +134,36 @@ export class RectRadius {
 
 	// 修改矩形的圆角
 	public modifyRectRadius(rectWidth: number, rectHeight: number, radii: IRadius): IRadius {
-		const leftTop = radii.leftTop;
-		const rightTop = radii.rightTop;
-		const rightBottom = radii.rightBottom;
-		const leftBottom = radii.leftBottom;
+		// 转换为 Decimal
+		let modifiedLeftTop = new Decimal(radii.leftTop);
+		let modifiedRightTop = new Decimal(radii.rightTop);
+		let modifiedRightBottom = new Decimal(radii.rightBottom);
+		let modifiedLeftBottom = new Decimal(radii.leftBottom);
 
-		let modifiedLeftTop = leftTop;
-		let modifiedRightTop = rightTop;
-		let modifiedRightBottom = rightBottom;
-		let modifiedLeftBottom = leftBottom;
+		const width = new Decimal(rectWidth);
+		const height = new Decimal(rectHeight);
 
 		// 计算 leftTop 是否需要约束
 		const modifyLeftTop = () =>
-			modifiedLeftTop + modifiedLeftBottom > rectHeight || modifiedLeftTop + modifiedRightTop > rectWidth;
+			modifiedLeftTop.plus(modifiedLeftBottom).greaterThan(height) ||
+			modifiedLeftTop.plus(modifiedRightTop).greaterThan(width);
+
 		// 计算 rightTop 是否需要约束
 		const modifyRightTop = () =>
-			modifiedRightTop + modifiedRightBottom > rectHeight || modifiedRightTop + modifiedLeftTop > rectWidth;
+			modifiedRightTop.plus(modifiedRightBottom).greaterThan(height) ||
+			modifiedRightTop.plus(modifiedLeftTop).greaterThan(width);
+
 		// 计算 rightBottom 是否需要约束
 		const modifyRightBottom = () =>
-			modifiedRightBottom + modifiedRightTop > rectHeight || modifiedRightBottom + modifiedLeftBottom > rectWidth;
+			modifiedRightBottom.plus(modifiedRightTop).greaterThan(height) ||
+			modifiedRightBottom.plus(modifiedLeftBottom).greaterThan(width);
+
 		// 计算 leftBottom 是否需要约束
 		const modifyLeftBottom = () =>
-			modifiedLeftBottom + modifiedRightBottom > rectWidth || modifiedLeftBottom + modifiedLeftTop > rectHeight;
+			modifiedLeftBottom.plus(modifiedRightBottom).greaterThan(width) ||
+			modifiedLeftBottom.plus(modifiedLeftTop).greaterThan(height);
 
-		// 找到需要约束的圆角:如果和超出边界,则需要约束
+		// 找到需要约束的圆角
 		const needConstraint = {
 			leftTop: modifyLeftTop(),
 			rightTop: modifyRightTop(),
@@ -137,47 +178,47 @@ export class RectRadius {
 			needConstraint.rightBottom ||
 			needConstraint.leftBottom
 		) {
-			if (modifiedLeftTop + modifiedLeftBottom > rectHeight) {
-				if (modifiedLeftTop <= rectHeight / 2) {
-					modifiedLeftBottom = rectHeight - modifiedLeftTop;
-				} else if (modifiedLeftBottom <= rectHeight / 2) {
-					modifiedLeftTop = rectHeight - modifiedLeftBottom;
+			if (modifiedLeftTop.plus(modifiedLeftBottom).greaterThan(height)) {
+				if (modifiedLeftTop.lessThanOrEqualTo(height.dividedBy(2))) {
+					modifiedLeftBottom = height.minus(modifiedLeftTop);
+				} else if (modifiedLeftBottom.lessThanOrEqualTo(height.dividedBy(2))) {
+					modifiedLeftTop = height.minus(modifiedLeftBottom);
 				} else {
-					modifiedLeftTop = rectHeight / 2;
-					modifiedLeftBottom = rectHeight / 2;
+					modifiedLeftTop = height.dividedBy(2);
+					modifiedLeftBottom = height.dividedBy(2);
 				}
 			}
 
-			if (modifiedLeftTop + modifiedRightTop > rectWidth) {
-				if (modifiedLeftTop <= rectWidth / 2) {
-					modifiedRightTop = rectWidth - modifiedLeftTop;
-				} else if (modifiedRightTop <= rectWidth / 2) {
-					modifiedLeftTop = rectWidth - modifiedRightTop;
+			if (modifiedLeftTop.plus(modifiedRightTop).greaterThan(width)) {
+				if (modifiedLeftTop.lessThanOrEqualTo(width.dividedBy(2))) {
+					modifiedRightTop = width.minus(modifiedLeftTop);
+				} else if (modifiedRightTop.lessThanOrEqualTo(width.dividedBy(2))) {
+					modifiedLeftTop = width.minus(modifiedRightTop);
 				} else {
-					modifiedLeftTop = rectWidth / 2;
-					modifiedRightTop = rectWidth / 2;
+					modifiedLeftTop = width.dividedBy(2);
+					modifiedRightTop = width.dividedBy(2);
 				}
 			}
 
-			if (modifiedRightTop + modifiedRightBottom > rectHeight) {
-				if (modifiedRightTop <= rectHeight / 2) {
-					modifiedRightBottom = rectHeight - modifiedRightTop;
-				} else if (modifiedRightBottom <= rectHeight / 2) {
-					modifiedRightTop = rectHeight - modifiedRightBottom;
+			if (modifiedRightTop.plus(modifiedRightBottom).greaterThan(height)) {
+				if (modifiedRightTop.lessThanOrEqualTo(height.dividedBy(2))) {
+					modifiedRightBottom = height.minus(modifiedRightTop);
+				} else if (modifiedRightBottom.lessThanOrEqualTo(height.dividedBy(2))) {
+					modifiedRightTop = height.minus(modifiedRightBottom);
 				} else {
-					modifiedRightTop = rectHeight / 2;
-					modifiedRightBottom = rectHeight / 2;
+					modifiedRightTop = height.dividedBy(2);
+					modifiedRightBottom = height.dividedBy(2);
 				}
 			}
 
-			if (modifiedRightTop + modifiedLeftTop > rectWidth) {
-				if (modifiedRightTop <= rectWidth / 2) {
-					modifiedLeftTop = rectWidth - modifiedRightTop;
-				} else if (modifiedLeftTop <= rectWidth / 2) {
-					modifiedRightTop = rectWidth - modifiedLeftTop;
+			if (modifiedRightBottom.plus(modifiedLeftBottom).greaterThan(width)) {
+				if (modifiedRightBottom.lessThanOrEqualTo(width.dividedBy(2))) {
+					modifiedLeftBottom = width.minus(modifiedRightBottom);
+				} else if (modifiedLeftBottom.lessThanOrEqualTo(width.dividedBy(2))) {
+					modifiedRightBottom = width.minus(modifiedLeftBottom);
 				} else {
-					modifiedRightTop = rectWidth / 2;
-					modifiedLeftTop = rectWidth / 2;
+					modifiedRightBottom = width.dividedBy(2);
+					modifiedLeftBottom = width.dividedBy(2);
 				}
 			}
 
@@ -188,10 +229,10 @@ export class RectRadius {
 		}
 
 		return {
-			leftTop: modifiedLeftTop,
-			rightTop: modifiedRightTop,
-			rightBottom: modifiedRightBottom,
-			leftBottom: modifiedLeftBottom,
+			leftTop: modifiedLeftTop.toNumber(),
+			rightTop: modifiedRightTop.toNumber(),
+			rightBottom: modifiedRightBottom.toNumber(),
+			leftBottom: modifiedLeftBottom.toNumber(),
 		};
 	}
 
@@ -286,9 +327,9 @@ export class RectRadius {
 		return (Math.PI * radius) / 2;
 	}
 
-	// 计算路径中每个线段的长度，直线连接一个曲线时，视为一个线段
-	public calculatePathSegmentLength(rectWidth: number, rectHeight: number, radii: IRadius) {
-		const segmentLength = [
+	// 计算路径中每个线段的长度
+	public calculatePathSegment(rectWidth: number, rectHeight: number, radii: IRadius) {
+		return [
 			this.calculateQuarterArcLength(radii.leftTop), // 左上角
 			rectWidth - radii.leftTop - radii.rightTop, // 上边
 			this.calculateQuarterArcLength(radii.rightTop), // 右上角
@@ -298,6 +339,11 @@ export class RectRadius {
 			this.calculateQuarterArcLength(radii.leftBottom), // 左下角
 			rectHeight - radii.leftBottom - radii.leftTop, // 左边
 		];
+	}
+
+	// 计算路径中每个线段的长度，直线连接一个曲线时，视为一个线段
+	public calculatePathSegmentLength(rectWidth: number, rectHeight: number, radii: IRadius) {
+		const segmentLength = this.calculatePathSegment(rectWidth, rectHeight, radii);
 
 		const result = segmentLength.reduce((acc: Array<number | null>, curr) => {
 			if (curr === 0) {

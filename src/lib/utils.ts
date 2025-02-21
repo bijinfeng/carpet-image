@@ -53,7 +53,6 @@ export const countDivisibleNumbers = (length: number, size: number, parity?: 'ev
 	let remainingSpace = Decimal.mod(length, size).toNumber();
 
 	if ((parity === 'even' && count % 2 !== 0) || (parity === 'odd' && count % 2 === 0)) {
-		console.log(4444);
 		count = count - 1;
 		remainingSpace = Decimal.add(remainingSpace, size).toNumber();
 	}
