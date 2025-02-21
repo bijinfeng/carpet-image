@@ -95,7 +95,7 @@ async function exportToTiff() {
 
 	const dataURL = canvasRef.value.toDataURL();
 	const url = await rgbToCmyk(dataURL);
-	downloadURI(url, `${contextState.value.carpetName || contextState.value.remark}.jpg`);
+	downloadURI(url, `${contextState.value.remark || contextState.value.carpetName}.jpg`);
 	URL.revokeObjectURL(url);
 }
 
