@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import { updateEvent } from '@/helper/aptabase';
 import { useDocumentVisibility, useFetch, useIntervalFn } from '@vueuse/core';
 import { InfoIcon } from 'lucide-vue-next';
 import { onUnmounted, ref, watch } from 'vue';
+
 import { version } from '../../../package.json';
 
 const ONE_HOUR = 60 * 60 * 1000; // 1小时（毫秒）
@@ -25,7 +27,10 @@ onFetchResponse(() => {
 	}
 });
 
-const forceReload = () => location.reload();
+const forceReload = () => {
+	location.reload();
+	updateEvent(data.value?.version);
+};
 
 watch(visibility, (val) => {
 	if (val === 'hidden') {

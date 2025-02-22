@@ -8,13 +8,17 @@ init('A-SH-2497555130', {
 	isDebug: import.meta.env.DEV,
 });
 
-export function appMountedEvent() {
+export const appMountedEvent = () => {
 	trackEvent('app_mounted');
-}
+};
 
-export function downloadEvent() {
+export const downloadEvent = () => {
 	trackEvent('download');
-}
+};
+
+export const updateEvent = (newVersion: string) => {
+	trackEvent('update', { newVersion });
+};
 
 export const install = (app: App) => {
 	app.config.globalProperties.$aptabase = {
