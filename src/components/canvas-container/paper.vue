@@ -12,41 +12,39 @@ const { contextState, activeCarpet } = storeToRefs(layoutStore);
 const canvasRef = useTemplateRef<HTMLCanvasElement>('myCanvas');
 const contentRender = computed<IRenderCarpet>(() => activeCarpet.value.render(paper));
 
-let rectangle: paper.Path.Rectangle | null;
-let text: paper.PointText | null;
+let text: paper.Item;
 
 const createText = () => {
-	if (contextState.value.remark) {
-		if (!rectangle) {
-			rectangle = new paper.Path.Rectangle({
-				point: [-TEXT_LINE_HEIGHT, 0],
-				size: [TEXT_LINE_HEIGHT, contextState.value.height],
-				fillColor: 'white',
-			});
-		}
+	text?.remove();
 
-		if (!text) {
-			// 创建一个 PointText 对象
-			text = new paper.PointText({
-				point: [-TEXT_LINE_HEIGHT, contextState.value.height - 5], // 设置文字的位置
-				content: contextState.value.remark, // 设置文字内容
-				fillColor: TEXT_PRIMARY_COLOR, // 设置文字颜色
-				justification: 'left', // 设置文字对齐方式
-				fontSize: TEXT_FONT_SIZE, // 设置文字大小
-				leading: 1,
-				rotation: -90, // 设置文字旋转角度，使其垂直显示
-			});
-		}
+	if (!contextState.value.remark) return;
 
-		rectangle.bounds.size = new paper.Size(TEXT_LINE_HEIGHT, contextState.value.height);
-		text.content = contextState.value.remark;
-		text.position.y = contextState.value.height - 5 - text.bounds.height / 2;
-	} else {
-		rectangle?.remove();
-		text?.remove();
-		rectangle = null;
-		text = null;
-	}
+	const textSvg = `
+		<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="${contextState.value.height}" height="${TEXT_LINE_HEIGHT}">
+			<rect width="${contextState.value.height}" height="${TEXT_LINE_HEIGHT}" fill="white" />
+			<text
+				x="5"
+				y="${TEXT_LINE_HEIGHT * 0.8}"
+				fill="${TEXT_PRIMARY_COLOR}"
+				text-anchor="start"
+				font-family="Arial"
+				line-height="exact"
+				text-height="fixed"
+				dominant-baseline="middle"
+				font-size="${TEXT_FONT_SIZE}"
+			>
+				${contextState.value.remark}
+			</text>
+		</svg>
+	`;
+
+	text = paper.project.importSVG(textSvg, {
+		expandShapes: true,
+		onLoad: (svg: paper.Item) => {
+			svg.position = new paper.Point(-TEXT_LINE_HEIGHT / 2, contextState.value.height / 2);
+			svg.rotate(-90, svg.position);
+		},
+	});
 };
 
 const updateViewSize = () => {
@@ -62,29 +60,23 @@ const updateViewSize = () => {
 	}
 };
 
+const renderPaper = () => {
+	updateViewSize();
+	createText();
+	contentRender.value.render(contextState.value);
+};
+
 onMounted(() => {
 	if (canvasRef.value) {
 		// 初始化 paper.js 画布
 		paper.setup(canvasRef.value);
-		updateViewSize();
-		contentRender.value.render(contextState.value);
+		renderPaper();
 	}
 });
 
 watch(
-	() => contextState.value.remark,
-	() => {
-		updateViewSize();
-		createText();
-	},
-);
-
-watch(
-	() => [contextState.value.width, contextState.value.height, contextState.value.radius],
-	() => {
-		updateViewSize();
-		contentRender.value.render(contextState.value);
-	},
+	() => [contextState.value.width, contextState.value.height, contextState.value.radius, contextState.value.remark],
+	() => renderPaper(),
 	{ deep: true },
 );
 
@@ -101,5 +93,5 @@ defineExpose({ exportToImage: exportToTiff });
 </script>
 
 <template>
-  <canvas ref="myCanvas" :style="{ zoom: contextState.scale }" />
+	<canvas ref="myCanvas" :style="{ zoom: contextState.scale }" />
 </template>
