@@ -1,7 +1,7 @@
 {
 	"name": "carpet",
 	"type": "module",
-	"version": "2.1.4",
+	"version": "2.2.0",
 	"private": true,
 	"scripts": {
 		"dev": "rsbuild dev",
@@ -37,6 +37,7 @@
 		"@types/node": "^22.10.2",
 		"autoprefixer": "^10.4.20",
 		"cross-env": "^7.0.3",
+		"rsbuild-plugin-generate-file": "^0.3.0",
 		"rsbuild-plugin-svg": "^0.0.2",
 		"simple-git-hooks": "^2.11.1",
 		"tailwind-merge": "^2.6.0",
