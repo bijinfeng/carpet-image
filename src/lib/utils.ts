@@ -1,4 +1,4 @@
-import { CM_TO_PX } from '@/constants';
+import { CM_TO_PX, PIXEL_RATIO } from '@/constants';
 import { type ClassValue, clsx } from 'clsx';
 import { Decimal } from 'decimal.js';
 import { twMerge } from 'tailwind-merge';
@@ -34,7 +34,7 @@ export function calculateImageScale(_height: number) {
 	const height = _height / CM_TO_PX;
 	if (height <= 30) return 1;
 
-	return 1 + Math.ceil((height - 30) / 20) * 0.2;
+	return Decimal.div(1 + Math.ceil((height - 30) / 20) * 0.2, PIXEL_RATIO).toNumber();
 }
 
 // 获取小数位数

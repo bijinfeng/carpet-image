@@ -11,15 +11,12 @@ const BLOCK_SIZE = Decimal.div(39, PIXEL_RATIO).toNumber();
 const BLOCK_PADDING = Decimal.div(10, PIXEL_RATIO).toNumber();
 const RECT_SIZE = Decimal.div(60, PIXEL_RATIO).toNumber();
 
-// 文字图片
-const IMAGE_WIDTH = Decimal.div(765, PIXEL_RATIO).toNumber();
-const IMAGE_HEIGHT = Decimal.div(180, PIXEL_RATIO).toNumber();
 // 右上角花朵图片
-const IMAGE_RTFLOWER_WIDTH = Decimal.div(531, PIXEL_RATIO).toNumber();
-const IMAGE_RTFLOWER_HEIGHT = Decimal.div(339, PIXEL_RATIO).toNumber();
+const IMAGE_RTFLOWER_WIDTH = 531;
+const IMAGE_RTFLOWER_HEIGHT = 339;
 // 左下角花朵图片
-const IMAGE_LBFLOWER_WIDTH = Decimal.div(542, PIXEL_RATIO).toNumber();
-const IMAGE_LBFLOWER_HEIGHT = Decimal.div(437, PIXEL_RATIO).toNumber();
+const IMAGE_LBFLOWER_WIDTH = 542;
+const IMAGE_LBFLOWER_HEIGHT = 437;
 
 // 麦穗
 const wheatearData = `
@@ -137,24 +134,20 @@ class Render extends RectRadius implements IRenderCarpet {
 		}
 	}
 
-	private _createCenterText(props: RenderProps) {
-		const textSize = new this.scope.Size(IMAGE_WIDTH * this.imageScale, IMAGE_HEIGHT * this.imageScale);
-		const position = new this.scope.Point(props.width / 2, props.height / 2);
-
+	private _createCenterText(_props: RenderProps) {
 		// 中间文字
 		if (!this.centerText) {
 			this.centerText = new this.scope.Raster(textImage);
 			this.layer2.addChild(this.centerText);
 		}
 
-		this.centerText.position = position;
-		this.centerText.size = textSize;
+		this.centerText.position = this.scope.view.center;
+		this.centerText.scale(this.imageScale);
 	}
 
 	private _createLBFlower(props: RenderProps) {
 		const imageWidth = IMAGE_LBFLOWER_WIDTH * this.imageScale;
 		const imageHeight = IMAGE_LBFLOWER_HEIGHT * this.imageScale;
-		const size = new this.scope.Size(imageWidth, imageHeight);
 
 		const arcStartPoint = new this.scope.Point(0, props.height - this.radii.leftBottom);
 		const arcEndPoint = new this.scope.Point(this.radii.leftBottom, props.height);
@@ -169,14 +162,13 @@ class Render extends RectRadius implements IRenderCarpet {
 		}
 
 		this.lbFlower.position = position;
-		this.lbFlower.size = size;
+		this.lbFlower.scale(this.imageScale);
 		this.lbFlower.bringToFront();
 	}
 
 	private _createRTFlower(props: RenderProps) {
 		const imageWidth = IMAGE_RTFLOWER_WIDTH * this.imageScale;
 		const imageHeight = IMAGE_RTFLOWER_HEIGHT * this.imageScale;
-		const size = new this.scope.Size(imageWidth, imageHeight);
 
 		const arcStartPoint = new this.scope.Point(props.width - this.radii.rightTop, 0);
 		const arcEndPoint = new this.scope.Point(props.width, this.radii.rightTop);
@@ -192,7 +184,7 @@ class Render extends RectRadius implements IRenderCarpet {
 		}
 
 		this.rtFlower.position = position;
-		this.rtFlower.size = size;
+		this.rtFlower.scale(this.imageScale);
 		this.rtFlower.bringToFront();
 	}
 

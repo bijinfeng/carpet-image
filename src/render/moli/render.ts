@@ -1,5 +1,5 @@
 import textImage from '@/assets/moli/moli-text.jpg';
-import { CM_TO_PX, PIXEL_RATIO } from '@/constants';
+import { CM_TO_PX } from '@/constants';
 import { RectRadius } from '@/lib/rect-radius';
 import { tempCanvasRender } from '@/lib/temp-canvas';
 import { calculateImageScale, countDivisibleNumbers } from '@/lib/utils';
@@ -7,8 +7,6 @@ import type { IRadius, IRenderCarpet, RenderProps } from '@/types';
 import { Decimal } from 'decimal.js';
 import { uniq } from 'lodash-es';
 
-const IMAGE_WIDTH = Decimal.div(1511, PIXEL_RATIO).toNumber();
-const IMAGE_HEIGHT = Decimal.div(123, PIXEL_RATIO).toNumber();
 const BLOCK_SIZE = Decimal.mul(CM_TO_PX, 2).toNumber();
 const BLOCK_PADDING = CM_TO_PX;
 
@@ -76,18 +74,16 @@ class Render extends RectRadius implements IRenderCarpet {
 		this._calcaulateOffset(props);
 	}
 
-	private _createCenterText(props: RenderProps) {
+	private _createCenterText(_props: RenderProps) {
 		this.scope.activate();
-		const textSize = new this.scope.Size(IMAGE_WIDTH * this.imageScale, IMAGE_HEIGHT * this.imageScale);
-		const position = new this.scope.Point(props.width / 2, props.height / 2);
 
 		// 中间文字
 		if (!this.centerText) {
 			this.centerText = new this.scope.Raster(textImage);
 		}
 
-		this.centerText.position = position;
-		this.centerText.size = textSize;
+		this.centerText.position = this.scope.view.center;
+		this.centerText.scale(this.imageScale);
 		this.centerText.bringToFront();
 	}
 
