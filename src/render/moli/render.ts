@@ -74,13 +74,31 @@ class Render extends RectRadius implements IRenderCarpet {
 		this._calcaulateOffset(props);
 	}
 
-	private _createCenterText(_props: RenderProps) {
+	private _createCenterText(props: RenderProps) {
 		this.scope.activate();
 		this.centerText?.remove();
 
 		this.centerText = new this.scope.Raster(textImage);
+
+		let scaleFactor = this.imageScale;
+
+		const textSize = this.centerText.bounds.size;
+		const emptyContainerWidth = props.width - BLOCK_PADDING - this.blockSize * 4;
+		const emptyContainerHeight = props.height - BLOCK_PADDING - this.blockSize * 4;
+		// 判断图片的尺寸是否大于空白容器的尺寸
+		if (
+			this.imageScale * textSize.width > emptyContainerWidth ||
+			this.imageScale * textSize.height > emptyContainerHeight
+		) {
+			// 图片尺寸大于空白容器尺寸，需要调整图片大小
+			scaleFactor = Math.min(
+				(emptyContainerWidth / textSize.width) * 0.8,
+				(emptyContainerHeight / textSize.height) * 0.8,
+			);
+		}
+
 		this.centerText.position = this.scope.view.center;
-		this.centerText.scale(this.imageScale);
+		this.centerText.scale(scaleFactor);
 		this.centerText.bringToFront();
 	}
 
