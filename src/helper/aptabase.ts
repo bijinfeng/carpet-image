@@ -12,8 +12,8 @@ export const appMountedEvent = () => {
 	trackEvent('app_mounted');
 };
 
-export const downloadEvent = () => {
-	trackEvent('download');
+export const downloadEvent = (name: string, round = false) => {
+	trackEvent('download', { name, round });
 };
 
 export const updateEvent = (newVersion: string) => {

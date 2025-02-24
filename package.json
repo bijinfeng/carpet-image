@@ -1,7 +1,7 @@
 {
 	"name": "carpet",
 	"type": "module",
-	"version": "2.2.2",
+	"version": "2.2.3",
 	"private": true,
 	"scripts": {
 		"dev": "rsbuild dev",
@@ -22,7 +22,7 @@
 		"lodash-es": "^4.17.21",
 		"lucide-vue-next": "^0.469.0",
 		"paper": "^0.12.18",
-		"pinia": "^2.3.0",
+		"pinia": "^3.0.1",
 		"radix-vue": "^1.9.11",
 		"vee-validate": "^4.15.0",
 		"vue": "^3.5.13",

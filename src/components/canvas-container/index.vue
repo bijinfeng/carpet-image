@@ -28,7 +28,8 @@ async function handleDownload() {
 	await canvasRef.value?.exportToImage();
 	downloading.value = false;
 
-	downloadEvent();
+	const isRound = Object.values(contextState.value.radius).find((it) => it > 0);
+	downloadEvent(contextState.value.carpetName, !!isRound);
 }
 </script>
 
