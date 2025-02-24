@@ -11,13 +11,6 @@ const BLOCK_SIZE = Decimal.div(39, PIXEL_RATIO).toNumber();
 const BLOCK_PADDING = Decimal.div(10, PIXEL_RATIO).toNumber();
 const RECT_SIZE = Decimal.div(60, PIXEL_RATIO).toNumber();
 
-// 右上角花朵图片
-const IMAGE_RTFLOWER_WIDTH = 531;
-const IMAGE_RTFLOWER_HEIGHT = 339;
-// 左下角花朵图片
-const IMAGE_LBFLOWER_WIDTH = 542;
-const IMAGE_LBFLOWER_HEIGHT = 437;
-
 // 麦穗
 const wheatearData = `
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="39.11962890625" height="78.45852661132812" viewBox="0 0 39.11962890625 78.45852661132812" fill="none">
@@ -147,17 +140,20 @@ class Render extends RectRadius implements IRenderCarpet {
 	private _createLBFlower(props: RenderProps) {
 		this.lbFlower?.remove();
 
-		const imageWidth = IMAGE_LBFLOWER_WIDTH * this.imageScale;
-		const imageHeight = IMAGE_LBFLOWER_HEIGHT * this.imageScale;
+		// 左下角花朵
+		this.lbFlower = new this.scope.Raster(lbFlower);
+
+		const imageSize = this.lbFlower.bounds.size;
+		const imageWidth = imageSize.width * this.imageScale;
+		const imageHeight = imageSize.height * this.imageScale;
 
 		const arcStartPoint = new this.scope.Point(0, props.height - this.radii.leftBottom);
 		const arcEndPoint = new this.scope.Point(this.radii.leftBottom, props.height);
 		const arcCenterPoint = new this.scope.Point(this.radii.leftBottom, props.height - this.radii.leftBottom);
 		const middlePoint = this.calculateArcCenter(arcStartPoint, arcEndPoint, arcCenterPoint);
-		const position = new this.scope.Point(-14 + imageWidth / 2 + middlePoint.x, middlePoint.y - imageHeight / 2);
+		const pointY = Math.min(props.height, middlePoint.y * 1.1);
+		const position = new this.scope.Point(imageWidth / 2 + middlePoint.x * 0.8, pointY - imageHeight / 2);
 
-		// 左下角花朵
-		this.lbFlower = new this.scope.Raster(lbFlower);
 		this.lbFlower.position = position;
 		this.lbFlower.scale(this.imageScale);
 		this.lbFlower.bringToFront();
@@ -167,8 +163,12 @@ class Render extends RectRadius implements IRenderCarpet {
 	private _createRTFlower(props: RenderProps) {
 		this.rtFlower?.remove();
 
-		const imageWidth = IMAGE_RTFLOWER_WIDTH * this.imageScale;
-		const imageHeight = IMAGE_RTFLOWER_HEIGHT * this.imageScale;
+		// 右上角花朵
+		this.rtFlower = new this.scope.Raster(rtFlower);
+
+		const imageSize = this.rtFlower.bounds.size;
+		const imageWidth = imageSize.width * this.imageScale;
+		const imageHeight = imageSize.height * this.imageScale;
 
 		const arcStartPoint = new this.scope.Point(props.width - this.radii.rightTop, 0);
 		const arcEndPoint = new this.scope.Point(props.width, this.radii.rightTop);
@@ -177,8 +177,6 @@ class Render extends RectRadius implements IRenderCarpet {
 
 		const position = new this.scope.Point(middlePoint.x - imageWidth / 2, 21 + imageHeight / 2 + middlePoint.y);
 
-		// 右上角花朵
-		this.rtFlower = new this.scope.Raster(rtFlower);
 		this.rtFlower.position = position;
 		this.rtFlower.scale(this.imageScale);
 		this.rtFlower.bringToFront();
