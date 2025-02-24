@@ -16,7 +16,6 @@ class Render extends RectRadius implements IRenderCarpet {
 	private dashImage: paper.Item | null = null; // 虚线图片
 
 	private imageScale = 1; // 图片缩放比例
-	private radii!: IRadius; // 调整每个圆角的大小,确保其值不会过大,导致圆角重叠或超出矩形边界
 	private blockSize = BLOCK_SIZE;
 	private rectWidth = 0;
 	private rectHeight = 0;
@@ -29,7 +28,8 @@ class Render extends RectRadius implements IRenderCarpet {
 	private _calcaulateOffset(props: RenderProps) {
 		const rectWidth = Decimal.sub(props.width, Decimal.mul(BLOCK_PADDING, 2)).toNumber();
 		const rectHeight = Decimal.sub(props.height, Decimal.mul(BLOCK_PADDING, 2)).toNumber();
-		const radii = this.changeRadius(this.radii, BLOCK_PADDING);
+		const originRadii = this.modifyRectRadius(rectWidth, rectHeight, props.radius);
+		const radii = this.changeRadius(originRadii, BLOCK_PADDING);
 
 		const segments = this.calculatePathSegmentLength(rectWidth, rectHeight, radii);
 
@@ -69,8 +69,6 @@ class Render extends RectRadius implements IRenderCarpet {
 
 	private _watchProps(props: RenderProps) {
 		this.imageScale = calculateImageScale(props.height);
-		this.radii = this.modifyRectRadius(this.rectWidth, this.rectHeight, props.radius);
-
 		this._calcaulateOffset(props);
 	}
 
@@ -103,8 +101,10 @@ class Render extends RectRadius implements IRenderCarpet {
 	}
 
 	private _createBorderPath(props: RenderProps) {
+		const radii = this.modifyRectRadius(props.width, props.height, props.radius);
+
 		this.borderPath?.remove();
-		this.borderPath = this.drawRectRadius(0, 0, props.width, props.height, this.radii);
+		this.borderPath = this.drawRectRadius(0, 0, props.width, props.height, radii);
 		this.borderPath.fillColor = new this.scope.Color('black');
 	}
 
@@ -170,8 +170,9 @@ class Render extends RectRadius implements IRenderCarpet {
 		this.dashImage?.remove();
 		const containerWidth = Decimal.sub(props.width, Decimal.mul(BLOCK_PADDING, 2)).toNumber();
 		const containerHeight = Decimal.sub(props.height, Decimal.mul(BLOCK_PADDING, 2)).toNumber();
+		const radii = this.modifyRectRadius(this.rectWidth, this.rectHeight, props.radius);
 
-		const dashImageSVG = this._renderTemp(this.rectWidth, this.rectHeight, this.blockSize, this.radii);
+		const dashImageSVG = this._renderTemp(this.rectWidth, this.rectHeight, this.blockSize, radii);
 
 		this.scope.activate();
 
