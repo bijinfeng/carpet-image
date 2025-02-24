@@ -136,16 +136,17 @@ class Render extends RectRadius implements IRenderCarpet {
 
 	private _createCenterText(_props: RenderProps) {
 		// 中间文字
-		if (!this.centerText) {
-			this.centerText = new this.scope.Raster(textImage);
-			this.layer2.addChild(this.centerText);
-		}
 
+		this.centerText?.remove();
+		this.centerText = new this.scope.Raster(textImage);
 		this.centerText.position = this.scope.view.center;
 		this.centerText.scale(this.imageScale);
+		this.layer2.addChild(this.centerText);
 	}
 
 	private _createLBFlower(props: RenderProps) {
+		this.lbFlower?.remove();
+
 		const imageWidth = IMAGE_LBFLOWER_WIDTH * this.imageScale;
 		const imageHeight = IMAGE_LBFLOWER_HEIGHT * this.imageScale;
 
@@ -155,18 +156,17 @@ class Render extends RectRadius implements IRenderCarpet {
 		const middlePoint = this.calculateArcCenter(arcStartPoint, arcEndPoint, arcCenterPoint);
 		const position = new this.scope.Point(-14 + imageWidth / 2 + middlePoint.x, middlePoint.y - imageHeight / 2);
 
-		if (!this.lbFlower) {
-			// 左下角花朵
-			this.lbFlower = new this.scope.Raster(lbFlower);
-			this.layer1.addChild(this.lbFlower);
-		}
-
+		// 左下角花朵
+		this.lbFlower = new this.scope.Raster(lbFlower);
 		this.lbFlower.position = position;
 		this.lbFlower.scale(this.imageScale);
 		this.lbFlower.bringToFront();
+		this.layer1.addChild(this.lbFlower);
 	}
 
 	private _createRTFlower(props: RenderProps) {
+		this.rtFlower?.remove();
+
 		const imageWidth = IMAGE_RTFLOWER_WIDTH * this.imageScale;
 		const imageHeight = IMAGE_RTFLOWER_HEIGHT * this.imageScale;
 
@@ -177,15 +177,12 @@ class Render extends RectRadius implements IRenderCarpet {
 
 		const position = new this.scope.Point(middlePoint.x - imageWidth / 2, 21 + imageHeight / 2 + middlePoint.y);
 
-		if (!this.rtFlower) {
-			// 右上角花朵
-			this.rtFlower = new this.scope.Raster(rtFlower);
-			this.layer1.addChild(this.rtFlower);
-		}
-
+		// 右上角花朵
+		this.rtFlower = new this.scope.Raster(rtFlower);
 		this.rtFlower.position = position;
 		this.rtFlower.scale(this.imageScale);
 		this.rtFlower.bringToFront();
+		this.layer1.addChild(this.rtFlower);
 	}
 
 	render(props: RenderProps) {

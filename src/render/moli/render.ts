@@ -76,12 +76,9 @@ class Render extends RectRadius implements IRenderCarpet {
 
 	private _createCenterText(_props: RenderProps) {
 		this.scope.activate();
+		this.centerText?.remove();
 
-		// 中间文字
-		if (!this.centerText) {
-			this.centerText = new this.scope.Raster(textImage);
-		}
-
+		this.centerText = new this.scope.Raster(textImage);
 		this.centerText.position = this.scope.view.center;
 		this.centerText.scale(this.imageScale);
 		this.centerText.bringToFront();
