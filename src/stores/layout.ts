@@ -1,6 +1,7 @@
 import { carpetList } from '@/render';
 import type { CarpetData, IContextState } from '@/types';
 import { useTitle } from '@vueuse/core';
+import { useUrlSearchParams } from '@vueuse/core';
 import paper from 'paper';
 
 import { defineStore } from 'pinia';
@@ -22,13 +23,22 @@ function createContextState(data: CarpetData): IContextState {
 	};
 }
 
+const defaultCarpet = carpetList[0];
+
+const findCarpet = (id: string) => {
+	return carpetList.find((item) => item.id === id) || defaultCarpet;
+};
+
 export const useLayoutStore = defineStore('layout', () => {
-	const activeCarpet = ref<CarpetData>(carpetList[0]);
-	const contextState = reactive(createContextState(carpetList[0]));
+	const params = useUrlSearchParams<{ carpet: string }>('history', { initialValue: { carpet: defaultCarpet.id } });
+	const activeCarpet = ref<CarpetData>(findCarpet(params.carpet));
+	const contextState = reactive(createContextState(findCarpet(params.carpet)));
 	const title = useTitle(`${activeCarpet.value.name} - Alchemist`);
 
 	const switchCarpet = (item: CarpetData) => {
 		if (item.id === activeCarpet.value.id) return;
+
+		params.carpet = item.id;
 
 		// 清空画布
 		paper.project.clear();

@@ -5,7 +5,7 @@ import { Decimal } from 'decimal.js';
 import { render } from './render';
 
 export const zhongxia: CarpetData = {
-	id: 2,
+	id: 'shengxia',
 	name: '盛夏',
 	assetUrl: zhongxiaUrl,
 	step: 0.1,

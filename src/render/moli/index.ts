@@ -5,7 +5,7 @@ import { Decimal } from 'decimal.js';
 import { render } from './render';
 
 export const moli: CarpetData = {
-	id: 1,
+	id: 'moyu',
 	name: '墨语',
 	assetUrl: moliUrl,
 	step: 0.1,

@@ -24,7 +24,7 @@ export interface IRenderCarpet {
 }
 
 export interface CarpetData {
-	id: number;
+	id: string;
 	name: string;
 	assetUrl: string;
 	defaultSize: Size;
