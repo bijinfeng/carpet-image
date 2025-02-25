@@ -129,7 +129,6 @@ class Render extends RectRadius implements IRenderCarpet {
 
 	private _createCenterText(_props: RenderProps) {
 		// 中间文字
-
 		this.centerText?.remove();
 		this.centerText = new this.scope.Raster(textImage);
 		this.centerText.position = this.scope.view.center;
@@ -141,46 +140,54 @@ class Render extends RectRadius implements IRenderCarpet {
 		this.lbFlower?.remove();
 
 		// 左下角花朵
-		this.lbFlower = new this.scope.Raster(lbFlower);
+		const lbFlowerItem = new this.scope.Raster(lbFlower);
 
-		const imageSize = this.lbFlower.bounds.size;
-		const imageWidth = imageSize.width * this.imageScale;
-		const imageHeight = imageSize.height * this.imageScale;
+		lbFlowerItem.onLoad = () => {
+			const imageSize = lbFlowerItem.bounds.size;
+			const imageWidth = imageSize.width * this.imageScale;
+			const imageHeight = imageSize.height * this.imageScale;
 
-		const arcStartPoint = new this.scope.Point(0, props.height - this.radii.leftBottom);
-		const arcEndPoint = new this.scope.Point(this.radii.leftBottom, props.height);
-		const arcCenterPoint = new this.scope.Point(this.radii.leftBottom, props.height - this.radii.leftBottom);
-		const middlePoint = this.calculateArcCenter(arcStartPoint, arcEndPoint, arcCenterPoint);
-		const pointY = Math.min(props.height, middlePoint.y * 1.1);
-		const position = new this.scope.Point(imageWidth / 2 + middlePoint.x * 0.8, pointY - imageHeight / 2);
+			const arcStartPoint = new this.scope.Point(0, props.height - this.radii.leftBottom);
+			const arcEndPoint = new this.scope.Point(this.radii.leftBottom, props.height);
+			const arcCenterPoint = new this.scope.Point(this.radii.leftBottom, props.height - this.radii.leftBottom);
+			const middlePoint = this.calculateArcCenter(arcStartPoint, arcEndPoint, arcCenterPoint);
+			const pointY = Math.min(props.height, middlePoint.y * 1.1);
+			const position = new this.scope.Point(imageWidth / 2 + middlePoint.x * 0.8, pointY - imageHeight / 2);
 
-		this.lbFlower.position = position;
-		this.lbFlower.scale(this.imageScale);
-		this.lbFlower.bringToFront();
-		this.layer1.addChild(this.lbFlower);
+			lbFlowerItem.position = position;
+			lbFlowerItem.scale(this.imageScale);
+			lbFlowerItem.bringToFront();
+			this.layer1.addChild(lbFlowerItem);
+		};
+
+		this.lbFlower = lbFlowerItem;
 	}
 
 	private _createRTFlower(props: RenderProps) {
 		this.rtFlower?.remove();
 
 		// 右上角花朵
-		this.rtFlower = new this.scope.Raster(rtFlower);
+		const rtFlowerItem = new this.scope.Raster(rtFlower);
 
-		const imageSize = this.rtFlower.bounds.size;
-		const imageWidth = imageSize.width * this.imageScale;
-		const imageHeight = imageSize.height * this.imageScale;
+		rtFlowerItem.onLoad = () => {
+			const imageSize = rtFlowerItem.bounds.size;
+			const imageWidth = imageSize.width * this.imageScale;
+			const imageHeight = imageSize.height * this.imageScale;
 
-		const arcStartPoint = new this.scope.Point(props.width - this.radii.rightTop, 0);
-		const arcEndPoint = new this.scope.Point(props.width, this.radii.rightTop);
-		const arcCenterPoint = new this.scope.Point(props.width - this.radii.rightTop, this.radii.rightTop);
-		const middlePoint = this.calculateArcCenter(arcStartPoint, arcEndPoint, arcCenterPoint);
+			const arcStartPoint = new this.scope.Point(props.width - this.radii.rightTop, 0);
+			const arcEndPoint = new this.scope.Point(props.width, this.radii.rightTop);
+			const arcCenterPoint = new this.scope.Point(props.width - this.radii.rightTop, this.radii.rightTop);
+			const middlePoint = this.calculateArcCenter(arcStartPoint, arcEndPoint, arcCenterPoint);
 
-		const position = new this.scope.Point(middlePoint.x - imageWidth / 2, 21 + imageHeight / 2 + middlePoint.y);
+			const position = new this.scope.Point(middlePoint.x - imageWidth / 2, 21 + imageHeight / 2 + middlePoint.y);
 
-		this.rtFlower.position = position;
-		this.rtFlower.scale(this.imageScale);
-		this.rtFlower.bringToFront();
-		this.layer1.addChild(this.rtFlower);
+			rtFlowerItem.position = position;
+			rtFlowerItem.scale(this.imageScale);
+			rtFlowerItem.bringToFront();
+			this.layer1.addChild(rtFlowerItem);
+		};
+
+		this.rtFlower = rtFlowerItem;
 	}
 
 	render(props: RenderProps) {

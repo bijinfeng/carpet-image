@@ -1,23 +1,20 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { updateEvent } from '@/helper/aptabase';
-import { useDocumentVisibility, useFetch, useIntervalFn } from '@vueuse/core';
+import { set, useFetch, useIntervalFn } from '@vueuse/core';
 import { InfoIcon } from 'lucide-vue-next';
-import { onUnmounted, ref, watch } from 'vue';
+import { onUnmounted, ref } from 'vue';
 
 import { version } from '../../../package.json';
 
-const ONE_HOUR = 60 * 60 * 1000; // 1小时（毫秒）
+const ONE_HOUR = 30 * 60 * 1000; // 1小时（毫秒）
 
 const createFetchUrl = () => `/version.json?t=${Date.now()}`;
 
 const url = ref(createFetchUrl());
 const couldUpdate = ref(false);
-const visibility = useDocumentVisibility();
 
-const { pause, resume } = useIntervalFn(() => {
-	url.value = createFetchUrl();
-}, ONE_HOUR);
+const { pause } = useIntervalFn(() => set(url, createFetchUrl()), ONE_HOUR);
 const { data, onFetchResponse } = useFetch<{ version: string }>(url, { refetch: true }).get().json();
 
 onFetchResponse(() => {
@@ -31,14 +28,6 @@ const forceReload = () => {
 	location.reload();
 	updateEvent(data.value?.version);
 };
-
-watch(visibility, (val) => {
-	if (val === 'hidden') {
-		pause();
-	} else {
-		resume();
-	}
-});
 
 onUnmounted(pause);
 </script>
