@@ -1,4 +1,4 @@
-import textImage from '@/assets/moli/moli-text.jpg';
+import textImage from '@/assets/moli/moli-text.webp';
 import { CM_TO_PX } from '@/constants';
 import { RectRadius } from '@/lib/rect-radius';
 import { tempCanvasRender } from '@/lib/temp-canvas';

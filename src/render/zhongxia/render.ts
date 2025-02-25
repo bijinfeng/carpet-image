@@ -1,6 +1,6 @@
-import lbFlower from '@/assets/zhongxia/lbhua.png';
-import rtFlower from '@/assets/zhongxia/rthua.png';
-import textImage from '@/assets/zhongxia/zhongxia-text.png';
+import lbFlower from '@/assets/zhongxia/lbhua.webp';
+import rtFlower from '@/assets/zhongxia/rthua.webp';
+import textImage from '@/assets/zhongxia/zhongxia-text.webp';
 import { PIXEL_RATIO } from '@/constants';
 import { RectRadius } from '@/lib/rect-radius';
 import { calculateImageScale } from '@/lib/utils';
@@ -141,6 +141,7 @@ class Render extends RectRadius implements IRenderCarpet {
 
 		// 左下角花朵
 		const lbFlowerItem = new this.scope.Raster(lbFlower);
+		lbFlowerItem.visible = false;
 
 		lbFlowerItem.onLoad = () => {
 			const imageSize = lbFlowerItem.bounds.size;
@@ -157,6 +158,7 @@ class Render extends RectRadius implements IRenderCarpet {
 			lbFlowerItem.position = position;
 			lbFlowerItem.scale(this.imageScale);
 			lbFlowerItem.bringToFront();
+			lbFlowerItem.visible = true;
 			this.layer1.addChild(lbFlowerItem);
 		};
 
@@ -168,6 +170,7 @@ class Render extends RectRadius implements IRenderCarpet {
 
 		// 右上角花朵
 		const rtFlowerItem = new this.scope.Raster(rtFlower);
+		rtFlowerItem.visible = false;
 
 		rtFlowerItem.onLoad = () => {
 			const imageSize = rtFlowerItem.bounds.size;
@@ -184,6 +187,7 @@ class Render extends RectRadius implements IRenderCarpet {
 			rtFlowerItem.position = position;
 			rtFlowerItem.scale(this.imageScale);
 			rtFlowerItem.bringToFront();
+			rtFlowerItem.visible = true;
 			this.layer1.addChild(rtFlowerItem);
 		};
 
